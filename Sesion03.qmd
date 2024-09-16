@@ -1,0 +1,401 @@
+---
+title: "Importación y Manipulación de datos"
+author: "Christian Vásquez"
+format: html
+editor: visual
+---
+
+# Precio de Palto
+
+## Importar los datos
+
+Se puede importar los datos con la función read.csv para datos en extensión ".csv".
+
+```{r}
+
+# Cambiar a la ruta del documento
+
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+# getwd()
+
+# avocado <- read.csv(file = "C:/Users/Christian/Documents/Practica/data/Avocado prices/avocado.csv", sep = ";")
+
+# Buscar todos los documentos con extensión .csv
+# archivos <- list.files(path = "C:/Users/Christian/Documents/Practica/data/Avocado prices", pattern = "\\.csv$", full.names = TRUE, recursive = TRUE)
+
+# Buscar todos el documentos con avocado.csv
+archivos <- list.files(path = "C:/Users/Christian/Documents/Practica/data/Avocado Prices", pattern = "avocado.csv", full.names = TRUE, recursive = TRUE)
+
+avocado <- read.csv(file = archivos, sep = ";")
+
+```
+
+Si tuvieramos extensión del tipo ".xlsx" podemos usar:
+
+```{r}
+# Instalar readxl
+
+# install.packages("readxl")
+# library(readxl)
+
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(readxl, tidyverse, dplyr)
+```
+
+
+```{r}
+# avocado <- readxl::read_xlsx(path = "C:/Users/Christian/Documents/Practica/data/Avocado prices/avocado.xlsx",
+#                              sheet = "avocado")
+# 
+# avocado <- readxl::read_excel(path = "C:/Users/Christian/Documents/Practica/data/Avocado prices/avocado.xlsx",
+#                              sheet = "avocado")
+```
+
+Si tuvieramos extensión del tipo ".txt" podemos usar:
+
+```{r}
+
+# G2P <- read.table(file = "C:/Users/Christian/Documents/Practica/data/G2P Yield/BWGS_pheno.txt", header = TRUE)
+
+archivos <- list.files(path = "C:/Users/Christian/Documents/Practica/data/G2P Yield", pattern = "\\.txt$", full.names = TRUE, recursive = TRUE)
+
+G2P <- read.table(file = archivos[1], header = TRUE)
+
+```
+
+# Manipulación de datos
+
+```{r}
+G2P
+
+glimpse(G2P)
+str(G2P)
+```
+
+## Pipe nativo y Pipe de magrittr
+
+```{r}
+# Pipe de magrittr
+G2P %>% 
+  glimpse()
+
+# Pipe nativo
+G2P |> 
+  glimpse()
+
+
+```
+
+# Dplyr básico
+
+1. El primero argumento es siempre un data.frame.
+
+2. El argumento siguiente describe que es lo que vamos a hacer con el data.frame usando los nombres de variables.
+
+3. El resultado siembre es un nuevo data.frame.
+
+```{r}
+# Función filtrar
+
+G2P |>
+  filter(year %in% "2000")
+
+```
+
+```{r}
+# Función filtrar
+
+G2P |>
+  # filter(year %in% c("2000","2014")) |>
+  group_by(year) |>
+  summarise(mean = mean(yield))
+
+```
+
+## Manipulación de filas
+
+### Filter
+
+```{r}
+G2P |>
+  dplyr::filter(year > 2011)
+```
+
+```{r}
+G2P |>
+  dplyr::filter(year >= 2011)
+```
+
+```{r}
+G2P |>
+  dplyr::filter(year = 2011)
+```
+
+Este es un error común:
+
+```{r}
+#! eval = false
+ 
+# G2P |>
+#   dplyr::filter(year = 2011)
+```
+
+Puedes filtrar así:
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011)
+```
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011 &
+                  site %in% "CF")
+```
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011 |
+                  site %in% "CF")
+```
+
+Hacer esto o esforzarse por hacer esto:
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% c(2011, 2012))
+```
+
+En lugar de esto:
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011 |
+                  year %in% 2012)
+```
+
+Este es un error común:
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011 | 2012)
+```
+
+También es útil hacer esto:
+
+```{r}
+G2P |>
+  dplyr::filter(year %in% 2011,
+                site %in% "CF",
+                trial %in% "ISA2")
+```
+
+### Arrange
+
+Para ordenar los valores de menor a mayor según las columnas de mi interés:
+
+```{r}
+avocado |>
+  arrange(Date, AveragePrice, region)
+```
+
+Para ordenar de forma descendente:
+
+```{r}
+avocado |>
+  arrange(Date, desc(AveragePrice), region)
+```
+
+```{r}
+avocado |>
+  arrange(Date, -AveragePrice, region)
+```
+
+```{r}
+avocado |>
+  dplyr::arrange(desc(Date), desc(AveragePrice), desc(region))
+```
+
+### Más de una operación
+
+```{r}
+avocado |>
+  filter(Total.Volume >= 50000 &
+           type == "organic") |>
+  arrange(Date, -AveragePrice, region)
+```
+
+### distinct
+
+```{r}
+avocado |>
+  distinct(Date, region) |>
+  arrange(Date)
+```
+
+## Manipulación de columnas
+
+### Mutate
+
+```{r}
+G2P |>
+  mutate(Yield90tn = ifelse(yield >= 90, TRUE, FALSE)) |>
+  group_by(Yield90tn) |>
+  summarise(n = n())
+```
+
+```{r}
+avocado |>
+  mutate(embarque4046_4225 = X4046 + X4225)
+```
+
+```{r}
+avocado |>
+  mutate(ID = 1)
+```
+
+### Select
+
+```{r}
+avocado |>
+  select(year, region, type, AveragePrice)
+```
+
+```{r}
+avocado |>
+  select(AveragePrice:Total.Bags)
+```
+
+```{r}
+avocado |>
+  select(!AveragePrice:Total.Bags)
+```
+
+```{r}
+avocado |>
+  select(-c(AveragePrice:Total.Bags))
+```
+
+```{r}
+avocado |>
+  dplyr::select(-c(AveragePrice, Total.Bags))
+```
+
+```{r}
+avocado |>
+  dplyr::select(where(is.numeric))
+```
+
+```{r}
+avocado |>
+  dplyr::select(Fecha = Date)
+```
+
+### Rename
+
+```{r}
+avocado |>
+  dplyr::rename(Fecha = Date)
+```
+
+```{r}
+avocado_cn <- avocado |>
+  janitor::clean_names()
+```
+
+### Relocate
+
+```{r}
+avocado |>
+  relocate(Date, AveragePrice, Total.Volume) |>
+  select(!X)
+```
+
+```{r}
+avocado |>
+  relocate(contains("Bags")) |>
+  select(!X)
+```
+
+```{r}
+avocado |>
+  relocate(starts_with("Total")) |>
+  select(!X)
+```
+
+```{r}
+avocado |>
+  relocate(!ends_with("Bags")) |>
+  select(!X)
+```
+
+## Funciones agrupadas (Groups)
+
+### group_by
+
+```{r}
+avocado |>
+  group_by(year)
+```
+
+### summarise
+
+```{r}
+avocado |>
+  group_by(year) |>
+  summarise(Price = mean(AveragePrice,
+                         na.rm = TRUE),
+            Volumen = sum(Total.Bags,
+                          na.rm = TRUE)) |>
+  mutate(Incomes = Price * Volumen)
+```
+
+### slices_functions
+
+```{r}
+avocado |>
+  group_by(year) |>
+  slice_max(Total.Volume, n = 10)
+```
+
+```{r}
+avocado |>
+  group_by(year) |>
+  slice_min(Total.Volume, n = 10)
+```
+
+```{r}
+avocado |>
+  group_by(year) |>
+  slice_head(n = 10)
+```
+
+```{r}
+avocado |>
+  group_by(year) |>
+  slice_tail(n = 1)
+```
+
+```{r}
+avocado |>
+  group_by(year) |>
+  slice_sample(n = 10)
+```
+
+### Groupping con múltiples variables
+
+```{r}
+avocado |>
+  group_by(year, type) |>
+  summarise(n = n())
+```
+
+### Ungrouping
+
+```{r}
+avocado |>
+  group_by(year, type) |>
+  summarise(n = n()) |>
+  ungroup()
+```
+

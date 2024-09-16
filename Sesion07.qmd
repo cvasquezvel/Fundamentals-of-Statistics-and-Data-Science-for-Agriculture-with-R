@@ -1,0 +1,388 @@
+---
+format: 
+  revealjs: 
+    embed-resources: true
+    # theme: theme/slides.scss
+    # css: [theme/syntax-highlight.css, theme/custom.css, theme/pacman.css]
+    css: theme.css
+    toc: false
+    footer: "Fundamentos de Estadística y Data Science para Agricultura con R"
+    logo: img/logo.png
+    transition: fade
+    background-transition: fade
+    incremental: false
+    slide-number: c/t
+    height: 900
+    width: 1600
+    chalkboard: false
+    controls: false
+    highlight-style: ayu-mirage
+    multiplex: true
+    touch: true
+    auto-stretch: true
+    link-external-icon: false
+    link-external-newwindow: false
+    self-contained-math: true
+    preview-links: true
+    menu:
+      side: left
+      width: normal
+      numbers: true
+from: markdown+emoji
+execute:
+  echo: false
+  freeze: auto
+cache: true
+---
+
+#  {background="#43464B" background-image="img/p10.png"}
+
+\
+\
+\
+\
+\
+\
+
+<h1>Sesión 07</h1>
+
+<h4>Muestreo aplicado</h4>
+
+<hr>
+
+<h3>Christian Vásquez-Velasco, Bach., M.Sc.(c)</h3>
+
+<h4>InkaStats Academy</h4>
+
+<h4>2023</h4>
+
+![](img/logo.png){.absolute top="150" left="950"}
+
+::: footer
+\[Curso: Fundamentos de Estadística y Data Science para Agricultura con R\]
+:::
+
+# Muestreo aplicado
+
+--------------------------------------------------------------------------------
+
+El muestreo es una técnica estadística que permite extraer individuos de una población con la condición de representar en pequeño la ocurrencia en la población, desde parámetros hasta características particulares de interés.
+
+Hay dos tipos de muestreo: 
+
+- Probabilístico.
+
+- No Probabilístico.
+
+El primero requiere un ingrediente aleatorio y el no probabilístico es completamente dirigido, realizado en forma personalizada por el observador.
+
+## Estimar una respuesta cuantitativa
+
+En el caso de de muestreo probabilístico, en un muestreo aleatorio, el tamaño de la muestra si es obtenida bajo los criterios de confianza, tolerancia y variabilidad, esta será considerada como una muestra con tamaño óptimo.
+
+$$n_0 = \frac{t_{0.05}^2*S^2}{\text{tol}^2}$$
+
+$n_0$: tamaño de muestre preliminar.
+
+$t_{0.05}$: es el valor del cuantil de t al 95 % de confianza, en la práctica es 1.96. El valor de \alfa puede cambiar a gusto o necesidad del investigador.
+
+$S^2$: Variancia estimada de la población o rando al cuadrado para un número pequeño (muestra preliminar) para la estiamción correspondiente.
+
+--------------------------------------------------------------------------------
+
+tol: Tolerancia, expresado en diferencia a considerar entre el valor real o verdadero y el posible valor determinado.
+
+$$n_1 = \frac{n_0}{1+\frac{n_0}{N}}$$
+
+--------------------------------------------------------------------------------
+
+Aplicar en el inventario de Isabelita, estimar el diámetro (DAP) de la especie SHIHUAHUACO.
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(readxl, dplyr, agricolae, agroforestry, soiltestcorr)
+```
+
+```{r, echo = TRUE, comment=NA,warning=FALSE}
+data("Isabelita")
+SHI <- subset(Isabelita, especie == "SHIHUAHUACO")
+head(SHI[,1:10])
+```
+
+--------------------------------------------------------------------------------
+
+### Muestreo piloto para tener una idea de la variación
+
+```{r, echo = TRUE, comment=NA,warning=FALSE}
+set.seed(123)
+n0 <- sample(1:949,6)
+n1 <- SHI[n0,]
+r <- max(n1$dap)-min(n1$dap)
+r
+```
+
+Es un estimado de la desviación de los datos (rango), al cuadrado será un estimado de la variancia. El rango se debe utilizar cuando se tiene como máximo 10 observaciones en la muestra preliminar.
+
+```{r,echo = TRUE,comment=NA,warning=FALSE}
+set.seed(123)
+n0 <- sample(1:nrow(SHI),50)
+n1 <- SHI[n0,]
+sd <- sd(n1$dap)
+sd
+```
+
+--------------------------------------------------------------------------------
+
+Se elige a la desviación estándar ($s$), como un estimador de la desviación de los datos cuando se tiene más de 10 observaciones en la muestra preliminar. La desviación estándar al cuadrado de la muestra preliminar nos dará una proyección de la variancia de la población.
+
+Se fija un $95\%$ de confianza (1.96) y una tolerancia, por ejemplo, de $1.2*0.1=0.12$ y la variancia es $s^2$.
+
+```{r,echo = TRUE,comment=NA,warning=FALSE}
+xhat <- mean(n1$dap)
+# xhat
+tol <- xhat*0.1
+# tol
+N <- nrow(SHI)
+n <- qnorm(0.975)^2*sd^2/tol^2
+n <- round(n+0.5,0)
+n <- n/(1+n/N)
+n <- round(n+0.5,0)
+cat("Tamaño de muestra ótpimo para DAP:", n, "\n")
+```
+
+--------------------------------------------------------------------------------
+
+**Estimar DAP**
+
+```{r,echo = TRUE,comment=NA,warning=FALSE}
+n0 <- sample(1:nrow(SHI),n)
+muestra <- SHI[n0,]
+summary(muestra$dap)
+```
+
+## Estimar una respuesta cualitativa
+
+El interés pueder ser, conocer el número y las especies que hay en la localidad en base a una muestra.
+
+Utilizando la misma fórmula de tamaño de muestra, se realiza las siguientes aproximaciones:
+
+$S^2$ aproximado de la variancia poblacional de una proporción entre dos alternativas y la máxima variancia es 0.5*0.5 = 0.25 = p(1-p).
+
+Tol es reemplazada por el margen de error a cometer en la estimación. Si es $10\%$ significa que la tolerancia es $0.1$
+
+$$n = \frac{t_{0.05}^2*S^2}{tol^2}$$
+
+En el caso de población finita (N), se realiza una corrección:
+
+$$n = \frac{n_0}{1+\frac{n_0}{N}}$$
+
+--------------------------------------------------------------------------------
+
+Aplicación en el inventario Isabelita, estimar el número y las especies que existen utilizando una muestra óptima.
+
+```{r,echo = TRUE,comment=NA,warning=FALSE}
+n <- qnorm(0.975)^2*0.5^2/0.05^2
+N <- nrow(Isabelita)
+n <- n/(1+n/N)
+n <- round(n+0.5,0)
+cat("Tamaño de muestra óptimo para estimar el número de especies:", n, "\n")
+```
+
+--------------------------------------------------------------------------------
+
+```{r,echo = TRUE,comment=NA,warning=FALSE}
+n0 <- sample(1:N,n)
+muestra <- Isabelita[n0,]
+table(muestra$especie) -> tabla
+cat("Total de especies en la muestra:", length(tabla), "\n")
+tabla
+```
+
+# Tipos de muestreo
+
+--------------------------------------------------------------------------------
+
+En el mundo de la investigación, el muestreo es una técnica crucial que permite hacer inferencias sobre una población mediante el estudio de una muestra representativa. Existen diferentes tipos de muestreo, cada uno con sus propias ventajas y desventajas. A continuación, les explicaré los cuatro tipos principales: muestreo aleatorio simple, muestreo sistémico, muestreo estratificado y muestreo por conglomerados.
+
+## Muestreo aleatorio simple
+
+Este tipo de muestreo implica seleccionar una muestra de forma completamente aleatoria de toda la población. Cada individuo en la población tiene la misma probabilidad de ser seleccionado. Este método es fácil de implementar y es útil cuando la población es homogénea y no hay información previa disponible sobre los individuos en la población.
+
+--------------------------------------------------------------------------------
+
+Supongamos que queremos seleccionar una muestra aleatoria simple de 50 plantas de un campo de 1000 plantas. Podemos usar la función "sample" de R de la siguiente manera:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+poblacion <- 1:1000
+muestra <- sample(poblacion, size = 50, replace = FALSE)
+muestra
+```
+
+## Muestreo sistemático
+
+Este tipo de muestreo implica seleccionar elementos de la población cada k-ésimo elemento después de un elemento de inicio aleatorio. Este método es útil cuando la población es grande y no se dispone de una lista completa de la población.
+
+--------------------------------------------------------------------------------
+
+Supongamos que queremos seleccionar una muestra sistemática de 50 plantas de un campo de 1000 plantas. Podemos usar la siguiente función en R:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+poblacion <- 1:1000
+k <- ceiling(length(poblacion)/50) # elige un número k para el tamaño de la muestra deseado
+inicio <- sample(1:k, size = 1) #elige un número aleatorio entre 1 y k como el punto de inicio
+muestra <- seq(from = inicio, to = length(poblacion), by = k)
+muestra
+```
+
+--------------------------------------------------------------------------------
+
+## Muestreo estratificado
+
+Este tipo de muestreo implica dividir la población en grupos (o estratos) y luego seleccionar una muestra aleatoria simple de cada grupo. Este método es útil cuando la población es heterogénea y se dispone de información previa sobre los individuos en la población.
+
+--------------------------------------------------------------------------------
+
+Supongamos que queremos seleccionar una muestra estratificada de 50 plantas de un campo de 1000 plantas. Podemos dividir la población en dos estratos: plantas con flores rojas y plantas con flores blancas. Luego, podemos usar la siguiente función en R para seleccionar una muestra aleatoria simple de cada estrato:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+poblacion_rojas <- sample(1:500, size = 100, replace = FALSE) #selecciona 100 plantas rojas
+poblacion_blancas <- sample(501:1000, size = 100, replace = FALSE) #selecciona 100 plantas blancas
+muestra <- c(poblacion_rojas, poblacion_blancas) # combina las dos muestras en una sola muestra
+muestra <- sample(muestra, size = 50, replace = FALSE) # selecciona una muestra aleatoria simple de 50 plantas
+muestra
+```
+
+# Tamaño y forma de las parcelas
+
+--------------------------------------------------------------------------------
+
+El índice de heterogeneidad del suelo de Smith se utiliza principalmente para determinar el tamaño óptimo de las parcelas. El índice da un valor único como medida cuantitativa de la heterogeneidad del suelo en una zona. Con la información de este índice se realiza un gráfico para el CV para el tamaño y la forma de la parcela.
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+data(rice)
+
+#startgraph
+table<-index.smith(rice,
+                   main="Relación entre el CV por unidad de superficie y el tamaño de la parcela",
+                   col="red",
+                   type="l")
+```
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+table
+```
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+uniformity <- data.frame(table$uniformity)
+uniformity <- uniformity %>%
+  dplyr::mutate(Width = Width * 50,
+                Length = Length * 80,
+                Size = Width * Length) %>%
+  group_by(Size, Width, Length) %>%
+  dplyr::mutate(ID = as.integer(cur_group_id()))
+```
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+model <- lm(CV ~ I(log(Size)), uniformity) # + I(Size^2)
+# model <- lm(CV ~ Size, uniformity)
+coeff2 <- coef(model)
+x<-0:max(uniformity$Size)
+CV<- coeff2[1] + coeff2[2] * log(x)
+# CV<- coeff2[1] + coeff2[2] * x
+#startgraph
+plot(x,
+     CV,
+     type = "l",
+     col = "blue",
+     main = "Relación entre el CV por unidad de superficie y el tamaño de la parcela")
+points(uniformity$Size,
+       uniformity$CV)
+```
+
+#  {background-color="#000000" background="#43464B"}
+
+::: r-fit-text
+¿Preguntas?
+:::
+
+## `r fontawesome::fa("mug-saucer", "white")` Hagamos una pausa {background-color="#000000" background="#43464B"}
+
+<hr>
+
+::: r-fit-text
+<center>
+
+Tomemos un descanso de `5 minutos`...
+
+Estire las piernas `r fontawesome::fa("person-walking", "white")`...
+
+Deje de ver las pantallas `r fontawesome::fa("laptop", "white")`...
+
+... cualquier `r fontawesome::fa("laptop", "white")`, las del celular `r fontawesome::fa("mobile", "white")` también.
+
+</center>
+:::
+
+
+```{r}
+#| echo: false
+library(countdown)
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#000000",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
+```
+
+```{r}
+#| echo: false
+countdown_timer(5)
+```
+
+#  {background-color="#000000"}

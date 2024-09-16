@@ -1,0 +1,371 @@
+---
+title: "Sesion04"
+author: "Christian Vásquez"
+format: html
+editor: visual
+cache: true
+---
+
+# Caso: Arándano Silvestre
+
+```{r}
+#| include: false
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(readxl, agricolae, raster, car, dplyr, skimr, DataExplorer, explore, forcats, summarytools, gt, psych)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+
+archivos <- list.files(pattern = "WildBlueberryPollinationSimulationData.csv",
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+# Importación
+data <- read.csv(archivos, 
+                 check.names = FALSE)
+
+# Pre-procesamiento
+
+data <- data %>%
+  dplyr::select(-c(`Row#`))
+
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+cat("Información del inventario:\n")
+# Estructura del data.frame
+# str(data)
+glimpse(data)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+cat("Primeros registros:\n")
+
+# Resumen de la base de datos
+head(data,10)
+```
+
+### Frecuencia del tamaño de los lotes
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(3,12,2,2), cex = 0.8)
+table(data$clonesize) -> tabla1
+barplot(tabla1, horiz = FALSE, las = 1)
+par(op)
+```
+
+-   Hay solo 1 lote con un tamaño de 10 m2.
+
+-   Hay 406 lotes con un tamaño de 12.5 m2.
+
+-   Hay 16 lotes con un tamaño de 20 m2.
+
+-   Hay 328 lotes con un tamaño de 25 m2.
+
+-   Hay 25 lotes con un tamaño de 37.5 m2.
+
+-   Hay solo 1 lote con un tamaño de 40 m2.
+
+La tabla indica que la mayoría de los lotes de arándanos silvestres tienen un tamaño de 12.5 m2, seguido por los lotes de 25 m2. Además, hay muy pocos lotes con tamaños de 10 m2, 20 m2 y 40 m2. El tamaño de los lotes puede ser importante para la producción y el rendimiento de los cultivos, por lo que esta información puede ser útil para los agricultores que cultivan arándanos silvestres.
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+table(data$honeybee) -> tabla2
+cat("Tabla de frecuencia del número de abejas:\n")
+
+op <- par(mar = c(3,12,2,2), cex = 0.8)
+barplot(tabla2, horiz = TRUE, las = 1)
+par(op)
+```
+
+### Resumen general de los datos
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+summary(data)
+```
+
+### Frecuencia de las especies nativas
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+data <- data %>%
+  dplyr::mutate(bumbles.factor = bumbles %>%
+                  as.numeric() %>%
+           cut(breaks = c(0,0.25,0.5, 100), include.lowest = TRUE) %>% 
+           forcats::fct_recode(
+                    "≤0.25"      =  "[0,0.25]",
+                    "0.25 a 0.5" = "(0.25,0.5]",
+                    ">0.5"      = "(0.5,100]"
+                  ),
+           honeybee.factor = honeybee %>%
+                  as.numeric() %>%
+           cut(breaks = c(0,0.25,0.5, 100), include.lowest = TRUE) %>% 
+           forcats::fct_recode(
+                    "≤0.25"      =  "[0,0.25]",
+                    "0.25 a 0.5" = "(0.25,0.5]",
+                    ">0.5"      = "(0.5,100]"
+                  ))
+```
+
+
+```{r}
+#| include: false
+#| comment: ""
+#| fig.align: 'center'
+table(data$bumbles.factor) -> tabla3
+addmargins(tabla3)
+```
+
+```{r}
+#| include: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(3,12,2,2), cex = 0.8)
+barplot(tabla3,horiz = TRUE, las = 1)
+par(op)
+```
+
+```{r}
+#| include: false
+#| comment: ""
+#| fig.align: 'center'
+
+addmargins(prop.table(tabla3))
+```
+```{r}
+#| include: false
+#| comment: ""
+#| fig.align: 'center'
+cbind(addmargins(tabla3),addmargins(prop.table(tabla3)))
+```
+```{r, results='asis'}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+summarytools::freq(data$bumbles.factor, plain.ascii = FALSE,
+                   style = "rmarkdown")
+```
+
+```{r, results='asis'}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+summarytools::freq(data$bumbles.factor, plain.ascii = FALSE,
+                   style = "rmarkdown", cumul = FALSE,
+                   headings = FALSE,
+                   report.nas = FALSE)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+summarytools::freq(data$bumbles.factor, plain.ascii = FALSE,
+                   style = "rmarkdown", cumul = TRUE,
+                   headings = FALSE,
+                   report.nas = FALSE)
+```
+
+```{r, fig.width=6, fig.height=4}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+p1 <- round(prop.table(tabla3)*100,2)
+op <- par(mar = c(3,12,2,2), cex = 0.8)
+pie(p1, main = "Gráfico circular",
+    labels = c("≤0.25 (72.46 %)","0.25 a 0.5 (27.41 %)",">0.5 (0.13 %)"))
+par(op)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(3,12,2,2), cex = 0.8)
+barplot(prop.table(tabla3)*100,horiz = TRUE, las = 1, xlim = c(0,75))
+par(op)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(4,3,2,2), cex = 0.8)
+An <- with(data, 
+           boxplot(andrena,
+                   col = "Yellow",
+                   main = "Número de individuos de la especie Andrena"))
+# An
+```
+
+# Caso: Precios de palto
+
+```{r}
+#| echo: false
+#| comment: ""
+
+archivos <- list.files(pattern = "avocado.csv", 
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+# Importación
+data <- read.csv(archivos, 
+                 check.names = FALSE)
+
+# Pre-procesamiento
+
+data <- data %>%
+  dplyr::select(-c(1)) %>%
+  dplyr::filter(!region %in% "TotalUS")
+```
+
+```{r}
+#| include: false
+#| comment: ""
+
+promedios <- with(data,
+                  tapply.stat(
+                    data[,2:3],
+                    type,
+                    function(x) mean(x,
+                                     na.rm = TRUE)))
+promedios
+```
+
+```{r}
+#| include: false
+#| comment: ""
+
+sd <- with(data,
+           tapply.stat(
+             data[,2:3],
+             type,
+             function(x) sd(x,
+                            na.rm = TRUE)))
+sd
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+resumen <- data |>
+  group_by(type) |>
+  summarise(Precio_mean = mean(AveragePrice,
+                          na.rm = TRUE),
+            Precio_sd = sd(AveragePrice,
+                          na.rm = TRUE),
+            Volumen_mean = mean(`Total Volume`,
+                           na.rm = TRUE),
+            Volumen_sd = sd(`Total Volume`,
+                           na.rm = TRUE)) |>
+  ungroup()
+resumen %>% gt::gt()
+```
+
+```{r, fig.width=6, fig.height=4}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(10,4,2,2), cex = 0.4)
+precio <- with(data, boxplot(AveragePrice ~ region, col = "Green",
+                            main = "Precio unitario de la palta por región",
+                            las = 2, xlab = ""))
+
+par(op)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+#| fig.align: 'center'
+
+op <- par(mar = c(10,4,2,2), cex = 0.4)
+volumen <- with(data, boxplot(`Total Volume` ~ region, col = "Red",
+                            main = "Diagrama de total de ventas por región",
+                            las = 2, xlab = ""))
+
+par(op)
+```
+
+# Caso: Experimento multilocalidad en maíz
+
+```{r, echo = F, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+
+archivos <- list.files(pattern = "corn.xlsx", 
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+# Importación
+maiz <- read_excel(archivos, sheet = "Datos 2")
+
+# Etiquetado de variables
+
+maiz$PAE <- car::recode(maiz$PAE, "1='Ausente o muy débil';
+                        3='Débil'; 5='Media'; 7='Fuerte'; 9='Muy fuerte'")
+maiz$PAE <- factor(maiz$PAE,
+                   levels = c("Ausente o muy débil",
+                              "Débil","Media","Fuerte",
+                              "Muy fuerte"), ordered = TRUE)
+
+# RNGkind("Wich")
+set.seed(645)
+maiz2 <- maiz[sample(nrow(maiz),400),]
+
+with(maiz2,table(Tratamiento))
+with(maiz2,table(Localidad))
+with(maiz2,table(PAE))
+```
+
+```{r}
+f1 <- table(maiz2$HPP)
+p2 <- round(prop.table(f1)*100,2)
+# La función que permite unir vectores
+tabla6 <- cbind(f1,p2)
+tabla6
+```
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+# Gráfico de líneas
+x <- row.names(tabla6)
+graphics::plot(p2, type = "h",col = 3,main = "Gráfico de líneas",las = 2)
+```
+
+```{r}
+skimr::skim(maiz2)
+```
+

@@ -1,0 +1,342 @@
+
+```{r, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(readxl, dplyr, agroforestry, exactRankTests, agricolae)
+```
+
+# Pruebas de hipótesis
+
+## Prueba sobre la media poblacional
+
+La media poblacional es un parámetro que mide la centralidad de los datos. Lo que se investiga a través de la hipótesis, es probar si hay cambios en la medida central.
+
+```{r, echo = F, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+archivos <- list.files(pattern = "corn.xlsx", 
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+# Importación
+maiz2 <- read_excel(archivos, sheet = "Datos 2")
+
+# Etiquetado de variables
+
+maiz2$PAE <- car::recode(maiz2$PAE, "1='Ausente o muy débil';
+                        3='Débil'; 5='Media'; 7='Fuerte'; 9='Muy fuerte'")
+maiz2$PAE <- factor(maiz2$PAE,
+                   levels = c("Ausente o muy débil","Débil","Media","Fuerte",
+                              "Muy fuerte"), ordered = TRUE)
+```
+
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+T1 <- maiz2[maiz2$Tratamiento=="T1",]
+T2 <- maiz2[maiz2$Tratamiento=="T2",]
+T3 <- maiz2[maiz2$Tratamiento=="T3",]
+
+```
+
+## Prueba de una cola superior
+
+El interés del investigador es probar que la media del Longitud de grano es superior a la actual.
+
+Prueba la hipótesis que la media de LG del tratamiento 1 es superior a 15 mm.
+
+$H_0: \mu \le 15~mm$
+
+$H_1: \mu > 15~mm$
+
+$\alpha = 0.05$
+
+Utilice la prueba de t-student
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+t.test(T1$LG, mu = 15, alternative = "greater")
+# Valor critico de la prueba
+qt(0.95,79)
+```
+Se observó que la media de la longitud de grano en el tratamiento 1 fue de 12.28 mm.
+
+**Conclusión**, con un alfa de 0.05, existe suficiente evidencia estadística para no rechazar la $H_0$ (hipótesis nula), por lo tanto, se concluye que la media de la longitud de grano en el tratamiento 1 es menor o igual a 15 mm.
+
+No hay ninguna evidencia estadística para sospechar que la media de LG en el tratamiento 1 sea mayor o superior a 15 mm, debido a que el pvalor obtenido por la prueba fue de 1 (superior al nivel de incertibumbre fijado para este experimento).
+
+## Prueba de una cola inferior
+
+El interés del investigador es probar que la media del ancho de grano es inferior a la actual.
+
+Prueba la hipótesis que la media de AG del tratamiento 3 es inferior a 9 mm.
+
+$H_0: \mu \ge 9~mm$
+
+$H_1: \mu < 9~mm$
+
+$\alpha = 0.08$
+
+Utilice la prueba de t-student
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+t.test(T3$AG, mu = 9, alternative = "less")
+# Valor critico de la prueba
+qt(0.08,79)
+```
+Se observó que el valor crítico de la prueba fue de t = -1.418424. Si se logra obtener un valor de t calculado menor a el t crítico o tabular de la prueba, entonces se rechaza la hipótesis nula.
+
+El valor calculado de t fue de `r t.test(T3$AG, mu = 9, alternative = "less")$statistic` (menor a -1.418424), obteniendo un p valor < 0.001 (p = 1.4 x $10^{-12}$). Teniendo en cuenta que el nivel de alfa designado para la prueba fue de 0.08, entonces el t calculado está situado en la zona de rechazo de la hipótesis nula.
+
+La media calculada del ancho de grano en el tratamiento 3, fue de 8.38 mm.
+
+**Conclusión** se rechaza la hipótesis nula, con un nivel de significancia de 0.08, por lo tanto, hay suficiente evidencia estadística para afirmar que la media del AG en el tratamiento 3 es menor a 9 mm.
+
+*Consideraciones*
+
+Existen niveles de incertidumbre o niveles de significancia ($\alpha$), que ayudan a saber cuanta probabilidad de tolerancia de cometer un error de tipo I, estamos dispuestos a aceptar.
+
+Existes cinco niveles de significancia ampliamente usados:
+
+No se rechaza la hipótesis nula cuando:
+
+- No significativo (n.s.): Cuando el p valor obtenido es mayor a 0.1.
+
+El criterio de rechazo de hipótesis nula, dependerá del investigador:
+
+- Marginal (m): Cuando el p valor obtenido es mayor a 0.05 y menor igual a 0.1.
+
+Se rechaza la hipótesis nula:
+
+- Significativo ($*$): Cuando el p valor obtenido es menor igual a 0.05.
+
+- Altamente significativo ($**$): Cuando el p valor obtenido es menor igual a 0.01.
+
+- Muy altamente significativo ($***$): Cuando el p valor obtenido es menor igual a 0.001.
+
+En experimentos agrícolas, es común utilizar un p valor de 0.05, pero, según el nivel de confianza de las conclusiones que se desean tomar, se puede optar por otros valores de significancia.
+
+## Limites de confianza
+
+Es una estimación del parámetro por intervalo, es mejor que una estimación puntual.
+
+Halle los límites de confianza al 95 % del ancho de grano del tratamiento 1.
+
+Utilice t-student.
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+with(T1, t.test(AG, conf.level = 0.95))
+```
+
+El valor medio del ancho de grano en el tratamiento 1 fue de $9.23675 mm$, su límite inferior fue de $9.063248$ y su límite superior fue de $9.410252$ al 95 % de confianza.
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+with(T1, t.test(AG, conf.level = 0.95, alternative = "less"))
+```
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+with(T1, t.test(AG, conf.level = 0.95, alternative = "greater"))
+```
+
+## Prueba de dos colas
+
+Prueba la hipótesis que la media de la longitud de grano en el tratamiento 1 es diferente a la media de la longitud de grano en el tratamiento 3.
+
+$H_0: \mu_{T1} = \mu_{T3}$
+
+$H_1: \mu_{T1} \neq \mu_{T3}$
+
+$H_0: \mu_{T1} - \mu_{T3} = 0$
+
+$H_1: \mu_{T1} - \mu_{T3} \neq 0$
+
+$\alpha = 0.03$
+
+Utilice la prueba de t-student
+
+Primero realice la prueba de homogeneidad de variancia
+
+$H_0: \sigma_{T1} = \sigma_{T3}$
+
+$H_1: \sigma_{T1} \neq \sigma_{T3}$
+
+$H_0: \frac{\sigma_{T1}}{\sigma_{T3}} = 1$
+
+$H_1: \frac{\sigma_{T1}}{\sigma_{T3}} \neq 1$
+
+$\alpha = 0.1$
+
+Utilice la prueba de F
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+var.test(T1$LG,T3$LG, conf.level = 0.90)
+```
+
+Se rechaza la hipótesis nula, dado que el p.valor = 0.03664, es menor a 0.1, lo mínimo para no rechazar la hipótesis que concluye que las *variancias son equivalentes*.
+
+**Conclusión**
+A un nivel de significancia de 0.1, existe suficiente evidencia estadística para rechazar la hipótesis nula, por lo tanto, las variancias de longitud de grano de los tratamientos 1 y 3 no son equivalentes, entonces las variancias no son estadísticamente iguales.
+
+En la prueba de t-student debemos considerar estos resultados para realizar un ajuste de la prueba.
+
+```{r, echo = T, comment = NA, fig.align='center',fig.width=6,fig.height=4}
+t.test(T1$LG,T3$LG, conf.level = 0.97, alternative = "two.sided", var = FALSE)
+```
+La media de la longitud de grano del tratamiento 1 fue de $12.27925$ mm y en el tratamiento 3 fue de $11.63850$ mm.
+
+La diferencia de las medias fue de $0.64075$ mm, que tuvo un intervalo de confianza al $97\%$ con un valor superior de $0.9670783$ mm y un valor inferior de $0.3144217$ mm.
+
+El p valor fue de 0.0000304, menor al $\alpha$ de 0.03, por lo tanto se rechaza la hipótesis nula.
+
+**Conclusión**
+
+Con un nivel de significancia de 0.03, existe suficiente evidencia estadística para rechazar la hipótesis nula, por lo tanto, la diferencia de medias de la longitud de grano de los tratamientos 1 y 3 fue diferente estadísticamente de 0. Entonces, se puede concluir además, que el tratatamiento 1 posee una media estadísticamente diferente al tratamiento 3 con respecto a la longitud de grano.
+
+# Pruebas de hipótesis II
+
+## Prueba de hipótesis para k variancias
+
+Sirve para detectar si las variancias son constantes (homogéneas) o no constantes (heterogéneas).
+
+### Prueba de Barttlet
+
+**Con DAP**
+
+$H_0: \sigma_{Aucatadijo} = \sigma_{Bolaina} = \sigma_{Shihuahuaco} = \sigma_{Tornillo}$
+
+$H_1: \text{Al menos un } \sigma \text{ es diferente a los demás}$
+
+$\alpha = 0.01$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+data("bagua")
+
+dap <- bagua %>%
+  select(dap,especie) %>%
+  filter(especie %in% c("Aucatadijo","Bolaina","Shihuahuaco","Tornillo")) %>%
+  mutate(especie = factor(especie))
+
+# dap$especie <- dap$especie %>% as.character %>% as.factor
+
+# bartlett.test(especie$dap, especie$especie)
+bartlett.test(dap$dap~dap$especie)
+
+boxplot(dap$dap~dap$especie)
+```
+
+*Conclusión*. A un nivel de significancia de 0.01, existe suficiente evidencia estadística para rechazar $H_0$. Por lo tanto, se puede afirmar que la varianza del diámetro a la altura del pecho es diferente el al menos una de las especies.
+
+**Con Altura**
+
+$H_0: \sigma_{Aucatadijo} = \sigma_{Bolaina} = \sigma_{Shihuahuaco} = \sigma_{Tornillo}$
+
+$H_1: \text{Al menos un } \sigma \text{ es diferente a los demás}$
+
+$\alpha = 0.01$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+data("bagua")
+
+altura <- bagua %>%
+  select(altura,especie) %>%
+  filter(especie %in% c("Aucatadijo","Bolaina","Shihuahuaco","Tornillo")) 
+
+altura$especie <- altura$especie %>% as.character %>% as.factor
+
+bartlett.test(altura$altura~altura$especie)
+
+boxplot(altura$altura~altura$especie)
+```
+
+*Conclusión*. A un nivel de significancia de 0.01, existe suficiente evidencia estadística para no rechazar $H_0$. Por lo tanto, se puede afirmar que la varianza de la altura del árbol no es diferente entre las especies.
+
+## Prueba de k medias
+
+$H_0: \mu_{Aucatadijo} = \mu_{Bolaina} = \mu_{Shihuahuaco} = \mu_{Tornillo}$
+
+$H_1: \text{Al menos un } \mu \text{ es diferente a los demás}$
+
+$\alpha = 0.07$
+
+Esta prueba tiene como supuesto que la dispersión o varianza de los niveles del factor evaluado es estadísticamente similar entre los niveles.
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+data("bagua")
+
+summary(aov(lm(altura~especie, altura)))
+cat("F tabular al 0.07 de alfa:",qf(0.07,3,267, lower.tail = F),".\n")
+```
+*Conclusión*. A un nivel de significancia de 0.07, existe suficiente evidencia estadística para no rechazar $H_0$. Por lo tanto puede afirmar que la altura de planta es estadísticamente similar entre las especies "Aucatadijo", "Bolaina", "Shihuahuaco" y "Tornillo".
+
+## Pruebas no paramétricas
+
+### Prueba U de Mann-Whitney
+
+$H_0: Mediana_{Aucatadijo} = Mediana_{Shihuahuaco}$
+
+$H_1: Mediana_{Aucatadijo} \neq Mediana_{Shihuahuaco}$
+
+$\alpha = 0.05$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+dap2 <- bagua %>%
+  select(dap,especie) %>%
+  filter(especie %in% c("Aucatadijo","Shihuahuaco"))
+
+Aucatadijo <- dap2%>%
+  filter(especie %in% c("Aucatadijo"))
+
+Shihuahuaco <- dap2%>%
+  filter(especie %in% c("Shihuahuaco"))
+```
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+wilcox.exact(Aucatadijo$dap,Shihuahuaco$dap, mu = 0,
+            paired = F, alternative = "t")
+```
+
+*Conclusión*. A un nivel de significancia de 0.05, existe suficiente evidencia estadística para rechazar la $H_0$. Por lo tanto, podemos afirmar que el dap mediano de la especie Aucatadijo es diferente al de la especie Shihuahuaco.
+
+### Prueba Mood
+
+$H_0: \theta_{Aucatadijo} = \theta_{Shihuahuaco}$
+
+$H_1: \theta_{Aucatadijo} \neq \theta_{Shihuahuaco}$
+
+$\alpha = 0.05$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+mood.test(Aucatadijo$dap,Shihuahuaco$dap, alternative = "t")
+```
+*Conclusión*. A un nivel de significancia de 0.05, existe suficiente evidencia estadística para no rechazar la $H_0$. Por lo tanto, podemos afirmar que la diferencia en la dispersión del diámetro a la altura del pecho de la especie Aucatadijo es igual al de la especie Shihuahuaco.
+
+### Prueba Kruskal Wallis
+
+$H_0: \text{El dap de las especies provienen de la misma distribución}$
+
+$H_1: \text{El dap de las especies no provienen de la misma distribución}$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+kSamples::ad.test(dap$dap~dap$especie)
+
+```
+ 
+$H_0: Mediana_{Aucatadijo} = Mediana_{Bolaina} = Mediana_{Shihuahuaco} = Mediana_{Tornillo}$
+
+$H_1: \text{Al menos una Mediana es diferente a las demás}$
+ 
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+with(dap,kruskal(y = dap,trt = especie,alpha = 0.05,group = T,console = T))
+
+dap %>%
+  group_by(especie) %>%
+  summarise(median = median(dap,
+                         na.rm = TRUE)) %>%
+  arrange(-median)
+```
+
+### Prueba de la Mediana
+
+$H_0: Mediana_{Aucatadijo} = Mediana_{Bolaina} = Mediana_{Shihuahuaco} = Mediana_{Tornillo}$
+
+$H_1: \text{Al menos una Mediana es diferente a las demás}$
+
+```{r, echo = T, comment=NA, fig.align='center',fig.width=6,fig.height=4}
+with(dap,Median.test(y = dap,trt = especie,alpha = 0.05,group = T,console = T))
+```
+

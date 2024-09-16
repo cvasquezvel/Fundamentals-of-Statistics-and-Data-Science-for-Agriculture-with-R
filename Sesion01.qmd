@@ -1,0 +1,554 @@
+---
+format: 
+  revealjs: 
+    embed-resources: true
+    # theme: theme/slides.scss
+    # css: [theme/syntax-highlight.css, theme/custom.css, theme/pacman.css]
+    css: theme.css
+    toc: false
+    footer: "Fundamentos de Estadística y Data Science para Agricultura con R"
+    logo: img/logo.png
+    transition: fade
+    background-transition: fade
+    incremental: false
+    slide-number: c/t
+    height: 900
+    width: 1600
+    chalkboard: false
+    controls: false
+    highlight-style: ayu-mirage
+    multiplex: true
+    touch: true
+    auto-stretch: true
+    link-external-icon: false
+    link-external-newwindow: false
+    self-contained-math: true
+    preview-links: true
+    menu:
+      side: left
+      width: normal
+      numbers: true
+from: markdown+emoji
+execute:
+  echo: false
+  freeze: auto
+cache: true
+---
+
+#  {background="#43464B" background-image="img/p10.png"}
+
+\
+\
+\
+\
+\
+\
+
+<h1>[Sesión 01]{.blanco}</h1>
+
+<h4>Introducción a la estadística y</h4>
+
+<h4>el análisis de datos en agricultura</h4>
+
+<hr>
+
+<h3>[Christian Vásquez-Velasco, Bach., M.Sc.(c)]{.blanco}</h3>
+
+<h4>[InkaStats Academy]{.blanco}</h4>
+
+<h4>[2023]{.blanco}</h4>
+
+![](img/logo.png){.absolute top="150" left="950"}
+
+::: footer
+[Curso: Fundamentos de Estadística y Data Science para Agricultura con R]{.blanco}
+:::
+
+# Conceptos básicos
+
+<hr>
+
+## Población (N)
+
+<hr>
+
+Es el conjunto de todos los elementos que se desean analizar y que presentan una o varias características en común.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Las parcelas de maíz amarillo duro en la comunidad de Lambayeque durante los meses de abril a agosto de 2021.
+-   Las plantas de arándano variedad Biloxi en el área experimental del vivero, modulo 9.
+-   Los datos del cultivo de pitahaya sembrada en la empresa Agropasión en Olmos, Perú.
+:::
+
+## Muestra (n)
+
+<hr>
+
+Es un subconjunto representativo de elementos provenientes de una problación.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Las parcelas de 10 agricultores de maíz amarillo duro en la comunidad de Lambayeque.
+-   30 plantas de arándano variedad Biloxi en el área experimental del vivero, modulo 9.
+-   Los datos del cultivo de pitahaya cosechadas durante las campañas 2020, 2021 y 2022 en la empresa Agropasión en Olmos, Perú.
+:::
+
+## Unidad elemental
+
+<hr>
+
+Es cada una de las personas, animales, cosas, o entidades que conforman las población en estudio.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Las parcelas de maíz amarillo duro.
+-   Las plantas de arándano.
+-   Las parcelas de pitahaya.
+:::
+
+## Variable
+
+<hr>
+
+Es toda característica que se desea observar, medir o evaluar de las unidades elementales.
+
+Las variables se pueden clasificar en cuantitativas o cualitativas.
+
+![](img/pp1.png){.absolute top="300" left="550" height="400"}
+
+------------------------------------------------------------------------
+
+### Variable cualitativa
+
+Proporcionan datos que dan como resultado una categoría. Pueden ser de tipo nominal u ordinal.
+
+#### Nominales
+
+Son aquellos cuyos valores o resultados pueden ser organizados y presentados en cualquier orden.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Forma de la hoja bandera del maíz.
+-   Tipo de dentadura del grano de maíz.
+-   Variedad de arándano.
+:::
+
+------------------------------------------------------------------------
+
+#### Ordinales
+
+Son aquellas cuyos valores o resultados deben ser organizados y presentados en orden definido.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Grado de instrucción del agricultor.
+-   Tono de maduración de las bayas del arándano.
+:::
+
+
+------------------------------------------------------------------------
+
+### Variable cuantitativa
+
+Son aquellas cuyos valores pueden ser expresados en forma numérica, Pueden ser discretas o continuas.
+
+#### Discreta
+
+Son aquellas que tienen un número finito o infinito numerable de valores posibles. Por lo general se obtienen mediante conteo.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Número de hojas por planta.
+-   Número de insectos por metro cuadrado.
+:::
+
+
+------------------------------------------------------------------------
+
+#### Continua
+
+Son aquellas que tienen una cantidad infinita o no numerable de valores posibles. Por lo general se puede obtener mediante instrumentos de medición.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Diámetro de fruto.
+-   Peso de fruto.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp6.png){.absolute top="300" left="450" height="400"}
+:::
+
+------------------------------------------------------------------------
+
+### Otra forma de clasificación de variables
+
+Otra forma de clasificación de las varibales es según su escalada de medida. De esta manera la clasificación sería:
+
+![](img/pp2.png){.absolute top="300" left="550" height="400"}
+
+------------------------------------------------------------------------
+
+#### Nominal
+
+Los datos son etiquetas o nombres que se emplean para definir un atributo del elemento.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Estado civil.
+-   Profesión.
+-   Género.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp3.png){.absolute top="300" left="550" height="400"}
+:::
+
+
+------------------------------------------------------------------------
+
+#### Ordinal
+
+Los datos son etiquetas y además se pueden ordenar de forma ascendente o descendente.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Nivel de apreciación o calidad de un fruto.
+-   Curvatura de las ramas u hojas con respecto al tallo.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp4.png){.absolute top="400" left="350" height="400"}
+:::
+
+------------------------------------------------------------------------
+
+#### Intervalo
+
+Los datos son numéricos, el cero es **relativo**, es decir, no indica ausencia de la característica medida.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Temperatura (°F o °C).
+-   Fechas del calendario.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp5.jpg){.absolute top="400" left="400" height="400"}
+:::
+
+------------------------------------------------------------------------
+
+#### Razón:
+
+Los datos son numéricos, el cero es **absoluto**, es decir, indica la ausencia de característica medida.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Peso.
+-   Estatura.
+-   Salario.
+-   Diámetro.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp7.png){.absolute top="300" left="550" height="400"}
+:::
+
+## Observación
+
+<hr>
+
+Es el dato registrado, producto de la *medición* o apreciación de una característica en una unidad elemental.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   El ingreso mensual de la empresa agroexportadora Chapisol, producto de las ventas de arándano.
+-   El calibre de una baya de vid.
+:::
+
+::: {.fragment .fade-in}
+![](img/pp8.jpg){.absolute top="400" left="550" height="400"}
+:::
+
+## Parámetro
+
+<hr>
+
+Es una medida que resume los datos provenientes de la población. Es decir es una función de todas las observaciones de una población.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Luego de realizar un censo a los agricultores del distrito de Túcume se obtuvo que el ingreso medio mensual fue de 920 soles.
+-   Luego de una evaluación aleatoria en campo, el calibre de una baya de vid registrado fue de 22 mm.
+:::
+
+## Estadístico
+
+<hr>
+
+Es una medida que resume los datos provenientes de la muestra.
+
+::: {.fragment .fade-in}
+**Ejemplos:**
+:::
+
+::: incremental
+
+-   Luego de realizar un muestreo a 30 agricultores del distrito de Túcume se obtuvo que el ingreso medio mensual fue de 950 soles.
+-   Luego de un muestreo a 10 bayas por planta en 50 plantas de vid en un módulo de riego de 50 hectáreas, se determinó que el calibre promedio de las bayas de vid fue de 20.9 mm.
+:::
+
+## Deficinión de Estadística
+
+<hr>
+
+Es la ciencia que se ocupa de la creación, desarrollo y aplicación de técnicas que permiten hacer un análisis confiable de una población.
+
+En terminos generales, se ocupa de la colección, resumen, presentación, análisis e interpretación de datos y resultados, de modo tal que pueda evaluarse la confiabilidad y riesgos asociados a las conclusiones que se puedan derivar a partir de los datos captados.
+
+## División de la Estadística
+
+<hr>
+
+### Descriptiva
+
+Son técnicas de recolección, caracterización, resumen y presentación que permiten `describir` un conjunto de datos.
+
+Con un análisis descriptivo, se pueden obtener indicadores (estimaciones puntuales). tablas de frecuencia (o contingencia) y gráficos.
+
+Para realizar el análisis descriptivo se debe tener en cuenta el tipo de variable que se está analizando (cualitativa o cuantitativa) y la cantidad de variables que se están analizando a la vez (univariada, bivariada o multivariada).
+
+------------------------------------------------------------------------
+
+### Inferencial
+
+Son técnicas para estimar parámetros de una población o tomar decisiones sobre la población basadas en el resultado de una muestra. Estas conclusiones pueden tener cierto margen de error; por eso, se dan con una medida de confiabilidad o probabilidad.
+
+Comprende la estimación de intervalos de confianza y la realización de pruebas de hipótesis para uno o varios parámetros.
+
+Al igual que el análisis descriptivo para realizar un inferencial se debe tener en cuenta la naturaleza de la variable (si los datos provienen de alguna distribución teórica), el tipo de variable y la cantidad de variables involucradas en el análisis.
+
+------------------------------------------------------------------------
+
+### Paramétrica
+
+Utiliza cálculos y procedimientos asumiendo que conoce cómo se distribuye la variable aleatoria a estudiar.
+
+### No paramétrica
+
+No requiere del conocimiento de la distribución de la variable aleatoria a estudiar.
+
+## Estadística moderna: un enfoque dual
+
+<hr>
+
+Siglo XVIII: Estadística Bayesiana y Clásica
+
+::: {.fragment .fade-in}
+El enfoque clásico se basa en la teoría de la probabilidad y utiliza una serie de supuestos para hacer inferencias sobre los parámetros de interés en un conjunto de datos. Este enfoque asume que los parámetros son fijos y desconocidos, y los intervalos de confianza y pruebas de hipótesis se utilizan para tomar decisiones sobre si una hipótesis nula debe ser rechazada o no.
+:::
+
+::: {.fragment .fade-in}
+Si un agricultor está tratando de decidir cuándo sembrar una cosecha, puede basarse en una serie de supuestos, como el clima y la calidad del suelo, para tomar una decisión. Este enfoque se asemeja al enfoque clásico, donde se utilizan supuestos para hacer inferencias sobre los parámetros desconocidos.
+:::
+
+------------------------------------------------------------------------
+
+::: {.fragment .fade-in}
+El enfoque bayesiano se basa en la teoría de la probabilidad condicional y utiliza una perspectiva más subjetiva. En lugar de suponer que los parámetros son fijos y desconocidos, se considera que estos parámetros son aleatorios y se modelan a través de distribuciones de probabilidad. Además, el enfoque bayesiano permite que la información previa o conocimiento experto se incorpore al análisis a través de distribuciones de probabilidad previas, lo que puede mejorar la precisión de las estimaciones.
+:::
+
+::: {.fragment .fade-in}
+Si el agricultor también tiene en cuenta su conocimiento previo sobre la calidad del suelo y cómo afecta el crecimiento de la cosecha, este enfoque se asemeja más al enfoque bayesiano, donde la información previa se incorpora al análisis para mejorar las estimaciones.
+:::
+
+------------------------------------------------------------------------
+
+Finales del siglo XIX: Interés de los biólogos en las probabilidades.
+
+::: incremental
+
+-   Mendel.
+-   Karl Pearson: Regresión y correlación para analizar datos genéticos.
+-   Ronald Fisher: Diseños Experimentales. Modelo paramétrico (datos siguen una distribución conocida, independencia de factores, aditividad lineal, homocedasticidad).
+:::
+
+## ¿Qué es Ciencia de datos? {background="#43464B" background-image="img/pp9.jpg"}
+
+<hr>
+
+::: {.fragment .fade-in}
+La ciencia de datos es una disciplina que se enfoca en extraer conocimiento y entendimiento a partir de datos. En el campo de la agricultura, la ciencia de datos puede ayudar a los agrónomos a tomar decisiones más informadas y precisas sobre cómo manejar sus cultivos y maximizar su rendimiento.
+:::
+
+::: {.fragment .fade-in}
+La ciencia de datos involucra varios pasos, incluyendo la recolección de datos, su limpieza y procesamiento, el análisis exploratorio de los datos, y la construcción de modelos y algoritmos para hacer predicciones y tomar decisiones. En la agricultura, estos modelos y algoritmos pueden utilizarse para predecir el rendimiento de los cultivos, detectar enfermedades y plagas, y optimizar el uso de fertilizantes y pesticidas.
+:::
+
+::: {.fragment .fade-in}
+Es importante destacar que la ciencia de datos no se trata solo de la tecnología o los algoritmos que se utilizan, sino también de la comprensión de los datos y la interpretación de los resultados. Por lo tanto, es esencial que los profesionales agrónomos comprendan los fundamentos de la ciencia de datos para poder aprovecharla de manera efectiva en su trabajo diario.
+:::
+
+## Habilidades para Ciencia de datos {background="#43464B" background-image="img/pp11.jpg"}
+
+<hr>
+
+::: incremental
+
+-   Conocimientos de programación.
+-   Conocimientos en estadística.
+-   Habilidades en visualización de datos.
+-   Curiosidad y habilidades de resolución de problemas.
+-   Capacidad de trabajo en equipo.
+:::
+
+## Aprendizaje estadístico {background="#43464B" background-image="img/pp13.png"}
+
+<hr>
+
+El aprendizaje estadístico, es el **proceso de aprendizaje a partir de los datos** que se enfoca en desarrollar algoritmos y modelos estadísticos que permiten a las máquinas aprender de manera autónoma a partir de datos. En otras palabras, se trata de enseñar a las computadoras cómo identificar patrones y relaciones en los datos y utilizar esta información para hacer predicciones o tomar decisiones. Aplicando *métodos estadísticos* a un conjunto de datos podemos sacar conclusiones acerca de las relaciones entre variables (**inferencia**) o encontrar una función predictiva para nuevas observaciones (**predicción**).
+
+En el contexto de la agricultura, el aprendizaje estadístico puede ser muy útil para analizar grandes cantidades de datos recopilados de diferentes fuentes, como por ejemplo los datos climáticos, los datos de los cultivos, los datos de los suelos, entre otros. Estos datos pueden ser utilizados para desarrollar modelos predictivos que permitan tomar decisiones informadas y mejorar la productividad de los cultivos, la calidad de los productos agrícolas, y optimizar el uso de los recursos naturales.
+
+## Problemas que resuelven el Aprendizaje
+
+<hr>
+
+::: columns
+::: {.column width="50%"}
+::: incremental
+-   Gestión del riesgo climático
+-   Determinación de dosis y momento de fertilización
+-   **Análisis y predicción de rendimiento**
+-   Estrés hídrico
+-   Necesidad de jornales
+-   Diagnóstico de plagas y enfermedades
+:::
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="47%"}
+![](img/p7.png){.absolute top="200" left="750" height="400"}
+:::
+:::
+
+## Aprendizaje Supervisado y No Supervisado {.smaller}
+
+<hr>
+
+El aprendizaje estadístico supervisado implica el uso de datos etiquetados, es decir, datos que tienen una etiqueta que indica la respuesta o la variable de salida que se está tratando de predecir. El objetivo del aprendizaje supervisado es crear un modelo que pueda predecir la etiqueta de los nuevos datos de entrada. Por ejemplo, si tenemos datos sobre el rendimiento de diferentes variedades de cultivos junto con información sobre las condiciones ambientales en las que se cultivaron, podemos usar el aprendizaje supervisado para crear un modelo que prediga el rendimiento de una nueva variedad de cultivo en función de sus condiciones ambientales.
+
+El aprendizaje estadístico no supervisado, por otro lado, implica el uso de datos **no etiquetados**, es decir, datos que no tienen una etiqueta de respuesta o variable de salida conocida. El objetivo del aprendizaje no supervisado es descubrir patrones y estructuras ocultas en los datos, como grupos o clusters de observaciones que comparten características similares. En agricultura, el aprendizaje no supervisado se puede utilizar para identificar diferentes tipos de suelo o regiones agrícolas similares en función de características como la composición del suelo, las condiciones climáticas y otros factores.
+
+En resumen, el aprendizaje estadístico supervisado se utiliza para hacer predicciones sobre nuevos datos etiquetados, mientras que el aprendizaje estadístico no supervisado se utiliza para descubrir patrones y estructuras ocultas en los datos no etiquetados. Ambos enfoques tienen aplicaciones útiles en la agricultura y pueden ayudar a los agrónomos a tomar mejores decisiones y mejorar los rendimientos de los cultivos.
+
+## Regresión y Clasificación {.smaller}
+
+<hr>
+
+La regresión se utiliza para predecir una variable numérica (como el rendimiento de un cultivo) en función de otras variables independientes (como la cantidad de agua, nutrientes y otros factores ambientales). La clasificación, por otro lado, se utiliza para asignar objetos o eventos a una o más categorías o clases (como la clasificación de cultivos según su tipo).
+
+Un ejemplo para explicar la diferencia entre ambas técnicas sería:
+
+Supongamos que queremos predecir el rendimiento de un cultivo de trigo en función de la cantidad de agua y nutrientes que se le proporciona. En este caso, la regresión se puede utilizar para encontrar una relación entre estas variables y el rendimiento del cultivo. Por ejemplo, podemos usar una técnica de regresión para encontrar una ecuación *f* que nos permita predecir el rendimiento del cultivo en función de la cantidad de agua y nutrientes que recibe.
+
+Por otro lado, si queremos clasificar diferentes tipos de cultivos según sus características, como la altura, el color y la forma de las hojas, la clasificación se puede utilizar para asignar cada cultivo a una o más clases. Por ejemplo, podemos usar una técnica de clasificación para identificar diferentes tipos de hierbas según sus características físicas y bioquímicas.
+
+En resumen, la regresión se utiliza para predecir variables numéricas, mientras que la clasificación se utiliza para asignar objetos o eventos a una o más categorías o clases (variable categórica).
+
+## Enfoques Paramétrico y No Paramétrico {.smaller}
+
+<hr>
+
+El enfoque paramétrico y no paramétrico son dos enfoques diferentes en estadística que se utilizan en diferentes situaciones y con diferentes tipos de datos.
+
+El enfoque paramétrico asume que los datos siguen una distribución específica, como la distribución normal, y se utilizan modelos estadísticos con parámetros definidos para ajustar los datos. Estos modelos permiten hacer inferencias estadísticas más precisas y fiables, pero requieren que se cumplan ciertas suposiciones sobre los datos y la distribución que pueden no ser siempre ciertas en la práctica.
+
+Por otro lado, el enfoque no paramétrico no hace suposiciones sobre la distribución de los datos y utiliza métodos estadísticos más flexibles para analizar los datos. Este enfoque es más adecuado cuando no se conoce la distribución de los datos o cuando los datos son muy variables y no se ajustan a un modelo paramétrico específico. Sin embargo, los métodos no paramétricos pueden ser menos precisos y requieren un mayor número de datos para alcanzar la misma precisión que los métodos paramétricos.
+
+En el ámbito de la agricultura, el enfoque paramétrico puede ser utilizado para ajustar modelos a datos que se ajusten a una distribución conocida, como los rendimientos de los cultivos que siguen una distribución normal. El enfoque no paramétrico puede ser utilizado cuando no se conoce la distribución de los datos, por ejemplo, cuando se analizan los efectos de diferentes tipos de suelo en el crecimiento de las plantas y no se sabe qué distribución sigue la variable de respuesta.
+
+En resumen, el enfoque paramétrico y no paramétrico son dos enfoques diferentes en estadística que se utilizan en diferentes situaciones y con diferentes tipos de datos. Es importante entender cuándo utilizar cada enfoque para poder realizar análisis estadísticos adecuados y precisos en el campo de la agricultura.
+
+# {background-color="#000000" background="#43464B" }
+
+::: r-fit-text
+¿Preguntas?
+:::
+
+## `r fontawesome::fa("mug-saucer", "white")` Hagamos una pausa {background-color="#000000" background="#43464B"}
+
+<hr>
+
+::: r-fit-text
+<center>
+
+Tomemos un descanso de `5 minutos`...
+
+Estire las piernas `r fontawesome::fa("person-walking", "white")`...
+
+Deje de ver las pantallas `r fontawesome::fa("laptop", "white")`...
+
+... cualquier `r fontawesome::fa("laptop", "white")`, las del celular `r fontawesome::fa("mobile", "white")` también.
+
+</center>
+:::
+
+#  {background-color="#000000"}
+

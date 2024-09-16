@@ -1,0 +1,200 @@
+---
+title: "Sesion05"
+author: "Christian Vásquez"
+format: html
+editor: visual
+---
+
+## Indicadores estadísticos
+
+### Indicadores de centralidad
+
+1. El promedio
+
+```{r}
+#| include: false
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(readxl, agricolae, raster, car, dplyr)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+
+archivos <- list.files(pattern = "avocado.csv", 
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+# Importación
+data <- read.csv(archivos, 
+                 check.names = FALSE)
+
+# Pre-procesamiento
+
+convencional <- data %>%
+  dplyr::select(-c(1)) %>%
+  dplyr::filter(type %in% "conventional",
+                !region %in% "TotalUS")
+
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+
+cat("Promedio del precio de una palta convencional:",
+    round(mean(convencional$AveragePrice,
+         na.rm = TRUE), 2),
+    "dólares por unidad.\n")
+```
+2. Mediana
+
+```{r}
+#| echo: false
+#| comment: ""
+
+cat("Mediana del precio de una palta convencional:",
+    median(convencional$AveragePrice,
+           na.rm = TRUE),
+    "dólares por unidad.\n")
+```
+
+3. Moda
+
+```{r}
+#| echo: false
+#| comment: ""
+
+precio <- convencional$AveragePrice
+x <- base::sort(precio)
+h <- agricolae::graph.freq(x,
+                           plot=TRUE)
+```
+
+```{r}
+#| echo: false
+#| comment: ""
+
+moda <- stat.freq(h)$mode[1,3]
+cat("Moda del precio unitario de palta convencional:",
+    round(moda,2),
+    "dólares.\n")
+```
+
+### Indicadores de dispersión.
+
+1. Rango
+
+```{r}
+#| echo: false
+#| comment: ""
+
+rango <- function(vector){
+  range <- max(vector) - min(vector)
+  return(range)
+  }
+
+cat("Rango del precio unitario de palta convencional:",
+    rango(x),
+    "dólares.\n")
+```
+
+2. Desviación estándar
+
+Representado como S en muestras y como $\sigma$ en poblaciones.
+
+```{r}
+cat("Desviación estándar del precio unitario de palta convencional:",
+    sd(x),
+    "dólares.\n")
+```
+
+2. Varianza
+
+```{r}
+var(convencional$AveragePrice)
+```
+3. Covarianza
+
+```{r}
+X <- convencional %>%
+    dplyr::select(AveragePrice, `Total Volume`)
+```
+
+```{r}
+V <- var(X,
+         na.rm = TRUE)
+cat("Covarianza del precio unitario y el volumen de ventas de la palta convencional:",
+    V[2,1],
+    ".\n")
+```
+
+4. IQR
+
+```{r}
+cat("IQR del precio unitario de palta convencional:",
+    IQR(x,
+        na.rm = TRUE),
+    "dólares.\n")
+```
+5. Coeficiente de variación
+
+```{r}
+cv <- function(x, na.rm){
+  mean = mean(x, na.rm = na.rm)
+  sd = sd(x, na.rm = na.rm)
+  cv = sd/mean*100
+  return(cv)
+}
+
+cat("Coeficiente de variación del precio unitario de palta convencional:",
+    cv(x, na.rm = TRUE),
+    "%.\n")
+```
+```{r}
+coeficiente_de_variacion <- function(x) {
+  sd_x <- sd(x)
+  mean_x <- mean(x)
+  cv_x <- (sd_x / mean_x) * 100
+  return(cv_x)
+}
+
+coeficiente_de_variacion(x)
+```
+
+```{r}
+cat("Coeficiente de variación del precio unitario de palta convencional:",
+    raster::cv(x,
+               na.rm = TRUE),
+    "%.\n")
+```
+
+### 4. Forma de los datos
+
+a. Simetría
+
+```{r}
+cat("Coeficiente de simetría del precio unitario de palta convencional:",
+    skewness(x),
+    ".\n")
+```
+
+```{r}
+hist(precio)
+```
+
+b. Histograma y polígono de frecuencia
+
+```{r}
+h <- agricolae::graph.freq(x,
+                           frequency = 3,
+                           border="white")
+agricolae::polygon.freq(h,
+                        col = "red",
+                        lwd = 2,
+                        frequency = 3)
+lines(density(x),
+      col = "blue")
+```
+

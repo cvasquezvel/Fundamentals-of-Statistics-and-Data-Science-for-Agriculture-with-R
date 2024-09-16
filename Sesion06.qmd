@@ -1,0 +1,769 @@
+---
+format: 
+  revealjs: 
+    embed-resources: true
+    # theme: theme/slides.scss
+    # css: [theme/syntax-highlight.css, theme/custom.css, theme/pacman.css]
+    css: theme.css
+    toc: false
+    footer: "Fundamentos de Estadística y Data Science para Agricultura con R"
+    logo: img/logo.png
+    transition: fade
+    background-transition: fade
+    incremental: false
+    slide-number: c/t
+    height: 900
+    width: 1600
+    chalkboard: false
+    controls: false
+    highlight-style: ayu-mirage
+    multiplex: true
+    touch: true
+    auto-stretch: true
+    link-external-icon: false
+    link-external-newwindow: false
+    self-contained-math: true
+    preview-links: true
+    menu:
+      side: left
+      width: normal
+      numbers: true
+from: markdown+emoji
+execute:
+  echo: false
+  freeze: auto
+cache: true
+---
+
+#  {background="#43464B" background-image="img/p10.png"}
+
+\
+\
+\
+\
+\
+\
+
+<h1>Sesión 06</h1>
+
+<h4>Probabilidad y estadística inferencial</h4>
+
+<hr>
+
+<h3>Christian Vásquez-Velasco, Bach., M.Sc.(c)</h3>
+
+<h4>InkaStats Academy</h4>
+
+<h4>2023</h4>
+
+![](img/logo.png){.absolute top="150" left="950"}
+
+::: footer
+\[Curso: Fundamentos de Estadística y Data Science para Agricultura con R\]
+:::
+
+# Introducción a la teoría de la probabilidad
+
+<hr>
+
+## 1. Conceptos básicos
+
+<hr>
+
+1.1. Experimento aleatorio ($\epsilon$)
+
+Operación cuyo acto o certera no se puede predecir.
+
+Se realiza bajo los siguientes criterios:
+
+-   Puede ser repetido bajo las mismas condiciones.
+
+-   Se puede describir el número de resultados posibles.
+
+-   Se puede establecer un modelo matemático asociado a $\epsilon$.
+
+**Ejemplos:**
+
+$\epsilon_1$: Lanzar dos dados.
+
+$\epsilon_2$: Cantidad de lluvia que cae en una temporada determinada.
+
+$\epsilon_3$: Tiempo de vida de una motopulverizadora.
+
+------------------------------------------------------------------------
+
+1.2. Espacio muestral ($\Omega$)
+
+Conjunto de todos los posibles resultados de un experimento aleatorio $\epsilon$.
+
+**Ejemplos:**
+
+Los espacios muestrales de los experimentos aleatorios anteriores son:
+
+$\Omega_1$: {(1,1), (1.2), (1,3), ..., (6,6)}.
+
+$\Omega_2$: {x/x $\geq$ 0, x $\in$ $\mathbb R$}.
+
+$\Omega_3$: {x/x $\geq$ 0, x $\in$ $\mathbb Z$}.
+
+------------------------------------------------------------------------
+
+1.3. Evento
+
+Es cualquier subconjunto de un espacio muestral.
+
+Los eventos se identifican mediante letras mayúsculas.
+
+**Ejemplos:**
+
+A: La suma de los valores obtenidos al lanzar los dados es igual a 10.
+
+B: La cantidad de lluvia que cayó en una temporada determinada fue de 2 mm.
+
+C: El tiempo de vida de una motopulverizadora fue mayor a los 20 días.
+
+## 2. Probabilidad
+
+<hr>
+
+Número real que expresa la confianza o incertidumbre de la ocurrencia de un suceso o evento.
+
+Es la medida de la posibilidad de que ocurra un evento determinado.
+
+------------------------------------------------------------------------
+
+### 2.1 Definición clásica de probabilidad (a priori).
+
+Si un experimento aleatorio tiene n($\Omega$) resultados posibles y si n(A) de tales resultados correspondes a un evento A, entonces, siempre que los eventos simples de A sean mutuamente excluyentes e igualmente posibles, la probabilidad de que ocurra A es:
+
+$$P(A) = \frac{n(A)}{n(\Omega)} = \frac{\text{Número de eventos favorables}}{\text{Número de eventos posibles}}$$
+
+------------------------------------------------------------------------
+
+### 2.1 Definición frecuencial de probabilidades (a posteriori).
+
+Si un experimento aleatorio se repite n veces bajo las mismas condiciones y n(A) resultados correspondes a un evento A, entonces, la *probabilidad estimada de A* está dada por la frecuencia relativa del evento, es decir:
+
+$$P(A) = fr_A = \frac{n_A}{n}$$
+
+------------------------------------------------------------------------
+
+### 2.1 Definición axiomática.
+
+Sea $\Omega$ el espacio muestral asociado a un experimento aleatorio, la probabilidad de cualquier evento A de $\Omega$, es el número real P(A) que satisface los siguientes axiomas:
+
+1.  $P(A) \geq 0$ para todo evento A.
+
+2.  $P(\Omega) = 1$.
+
+3.  Si los eventos $A_1$, $A_2$, $A_3$... $A_k$, son mutuamente excluyentes, entonces la suma de probabilidades de todos los eventos es igual a 1.
+
+# Función de probabilidad.
+
+## 1. Función de probabilidad
+
+Sea $X$ una variable aleatoria que tiene como rango $R_x$, se denomina función $f(x)$ (modelo o distribución) de probabilidad de la variable aleatoria $X$, si a cada valor de $R_x$ se le asocia su probabilidad de ocurrencia, y la función $f(x)$ cumple con las siguientes condiciones:
+
+-   Las probabilidades correspondientes a cada valor del rango se encuentran entre 0 y 1.
+
+-   La suma de las probabilidades (en el caso discreto) o el área bajo la curva (en el caso continuo) asociadas a lso valores del rando es igual a 1.
+
+## 2. Principales funciones discretas.
+
+### 2.1. Uniforme discreta.
+
+La distribución uniforme discreta es una función de probabilidad discreta que asigna la misma probabilidad a cada uno de los posibles valores de una variable aleatoria discreta dentro de un rango finito. La función de probabilidad uniforme discreta está dada por:
+
+```{=tex}
+\begin{equation}
+P(X = k) = \frac{1}{n}
+\end{equation}
+```
+donde X es una variable aleatoria que toma valores enteros en el rango \[a, b\] y n es el número total de valores posibles en ese rango (n = b - a + 1).
+
+------------------------------------------------------------------------
+
+Un ejemplo común de la distribución uniforme discreta en agricultura es el conteo de la cantidad de plantas o animales en una muestra o área de estudio. Por ejemplo, se pueden contar la cantidad de plantas de una especie particular en una parcela determinada o el número de animales de una especie en un hábitat específico.
+
+Supongamos que se cuenta el número de plantas de una especie particular en cinco parcelas diferentes y se obtiene el siguiente conjunto de datos:
+
+5, 3, 6, 2, 4
+
+Para modelar este conjunto de datos con una distribución uniforme discreta, se puede asumir que cualquier valor entre el mínimo y el máximo de la muestra es igualmente probable. En este caso, el mínimo es 2 y el máximo es 6, por lo que hay 5 posibles valores: 2, 3, 4, 5 y 6, cada uno con la misma probabilidad de 1/5.
+
+En R, se puede generar una muestra aleatoria de una distribución uniforme discreta usando la función sample() especificando los posibles valores y el tamaño de la muestra. Para este ejemplo, la muestra de la distribución uniforme discreta se puede generar con el siguiente código:
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+# Datos de la muestra
+datos <- c(5, 3, 6, 2, 4)
+
+# Posibles valores
+valores <- 2:6
+
+# Generar muestra aleatoria de tamaño 100
+muestra <- sample(valores, size = 100, replace = TRUE)
+
+# Histograma de la muestra
+hist(muestra, breaks = seq(1.5, 6.5, by = 1), 
+     main = "Distribución Uniforme Discreta", 
+     xlab = "Número de plantas")
+```
+
+--------------------------------------------------------------------------------
+
+Este código generará una muestra aleatoria de tamaño 100 de la distribución uniforme discreta con valores posibles entre 2 y 6, y luego graficará un histograma de la muestra. El resultado será un histograma con cinco barras iguales que representan la frecuencia de cada valor posible en la muestra.
+
+------------------------------------------------------------------------
+
+### 2.2. Bernoulli.
+
+Esta función se utiliza para modelar un experimento aleatorio con dos posibles resultados: éxito o fracaso. La función de densidad de probabilidad de la distribución de Bernoulli es:
+
+```{=tex}
+\begin{equation}
+P(X = x) = p^x(1-p)^{1-x}
+\end{equation}
+```
+
+Donde X es una variable aleatoria de Bernoulli, x es el resultado del experimento (1 para éxito, 0 para fracaso), y p es la probabilidad de éxito.
+
+--------------------------------------------------------------------------------
+
+La distribución de Bernoulli es una distribución discreta que modela el resultado de un único experimento aleatorio que solo puede tener dos posibles resultados: éxito o fracaso. Esta distribución es muy útil en situaciones en las que se quieren modelar eventos binarios como el éxito o fracaso de un cultivo en una temporada.
+
+Supongamos que un agricultor está interesado en el rendimiento de un cultivo específico y desea determinar la probabilidad de que un cultivo produzca un buen rendimiento (éxito) o un mal rendimiento (fracaso) en una temporada determinada. El agricultor ha observado los rendimientos de los cultivos en los últimos años y ha encontrado que el 60% de las veces el cultivo produce un buen rendimiento.
+
+------------------------------------------------------------------------
+
+Para modelar esta situación con una distribución de Bernoulli, podemos definir la variable aleatoria X que toma el valor 1 si el cultivo produce un buen rendimiento (éxito) y el valor 0 si el cultivo produce un mal rendimiento (fracaso). La probabilidad de éxito se denota por p y se define como:
+
+$P(X=1)=p$
+
+La probabilidad de fracaso se denota por q y se define como:
+
+$P(X=0)=q=1−p$
+
+--------------------------------------------------------------------------------
+
+Para el ejemplo del agricultor, si definimos X como la variable aleatoria que toma el valor 1 si el cultivo produce un buen rendimiento y 0 si produce un mal rendimiento, podemos modelar la situación con una distribución de Bernoulli. La probabilidad de éxito p se define como 0.6, por lo que la probabilidad de fracaso es q = 1 - p = 0.4.
+
+Para simular esta situación en R, podemos utilizar la función rbinom() que genera muestras aleatorias de una distribución binomial con una sola realización (n = 1). El siguiente código simula 10 experimentos de rendimiento del cultivo y muestra el resultado de cada uno:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+p <- 0.6
+n <- 1
+set.seed(123)
+cultivo <- rbinom(n = 10, size = n, prob = p)
+cultivo
+```
+
+El resultado puede variar ligeramente debido a la aleatoriedad.
+
+Esto indica que los primeros cuatro cultivos produjeron un buen rendimiento (éxito), mientras que los últimos seis produjeron un mal rendimiento (fracaso).
+
+------------------------------------------------------------------------
+
+### 2.3. Poisson.
+
+        
+Esta función se utiliza para modelar la ocurrencia de eventos raros en un intervalo de tiempo o espacio. La función de densidad de probabilidad de la distribución de Poisson es:
+
+```{=tex}
+\begin{equation}
+P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}
+\end{equation}
+```
+
+Donde X es una variable aleatoria de Poisson, k es el número de eventos raros, y $\lambda$ es el número promedio de eventos raros en el intervalo de tiempo o espacio.
+
+La distribución de Poisson es útil en aplicaciones donde se quiere modelar la ocurrencia de eventos raros en un intervalo de tiempo determinado. En agricultura, un ejemplo común es el conteo de plagas en una zona determinada en un tiempo específico.
+
+------------------------------------------------------------------------
+
+Supongamos que se quiere modelar la cantidad de plagas en una zona de cultivo durante un día. Se sabe por experiencia que en promedio ocurren 5 plagas por día. Podemos utilizar la distribución de Poisson para modelar la ocurrencia de plagas en un día determinado.
+
+En R, podemos calcular la probabilidad de ocurrencia de un número determinado de plagas utilizando la función dpois(). Por ejemplo, para calcular la probabilidad de que haya exactamente 3 plagas en un día con $\lambda = 5$, podemos escribir:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+lambda <- 5
+k <- 3
+prob <- dpois(k, lambda)
+prob
+```
+
+Esto devuelve el valor de la probabilidad, que en este caso es 0.140, tal como se calculó anteriormente.
+
+------------------------------------------------------------------------
+
+### 2.4. Geométrica.
+
+La distribución geométrica es una función de probabilidad discreta que describe la cantidad de veces que debemos realizar un experimento Bernoulli antes de obtener el primer éxito. La probabilidad de éxito en cada experimento es igual a p. La función de probabilidad geométrica está dada por:
+
+```{=tex}
+\begin{equation}
+P(X = k) = (1-p)^{k-1}p
+\end{equation}
+```
+donde X es una variable aleatoria que cuenta la cantidad de intentos necesarios para obtener el primer éxito.
+
+------------------------------------------------------------------------
+
+Un ejemplo en agricultura de la distribución geométrica podría ser el número de intentos necesarios para que un agricultor tenga éxito en plantar una semilla y lograr que germine.
+
+Supongamos que un agricultor sabe que la probabilidad de que una semilla germine es del 30%. Entonces, la distribución geométrica modelaría la cantidad de intentos necesarios para que el agricultor tenga éxito en hacer germinar la semilla.
+
+```{r}
+#| echo: true
+#| comment: ""
+
+intentos <- rgeom(1000, 0.3)
+media <- mean(intentos)
+varianza <- var(intentos)
+```
+
+--------------------------------------------------------------------------------
+
+También podemos graficar la función de densidad de la distribución geométrica para visualizar su forma. Por ejemplo:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+library(ggplot2)
+
+df <- data.frame(x = 0:20)
+df$prob <- dgeom(df$x, 0.3)
+
+ggplot(df, aes(x=x, y=prob)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Número de intentos", y = "Probabilidad")
+```
+
+Esto nos dará la probabilidad de que la semilla tardará 5 días o más en germinar.
+
+------------------------------------------------------------------------
+
+### 2.4. Binomial negativa.
+
+La distribución binomial negativa es una función de probabilidad discreta que describe la cantidad de veces que debemos realizar un experimento Bernoulli antes de obtener un número fijo de éxitos r. La probabilidad de éxito en cada experimento es igual a p. La función de probabilidad binomial negativa está dada por:
+
+```{=tex}
+\begin{equation}
+P(X = k) = {k-1 \choose r-1} p^r (1-p)^{k-r}
+\end{equation}
+```
+donde X es una variable aleatoria que cuenta la cantidad de intentos necesarios para obtener r éxitos.
+
+------------------------------------------------------------------------
+
+Supongamos que un agricultor está interesado en saber cuántas semillas debe plantar para obtener una cosecha de al menos 10 plantas de tomate. Suponga que la probabilidad de que una semilla brote y crezca es del 60%.
+
+En este caso, podemos modelar el número de semillas que el agricultor necesita plantar como una distribución binomial negativa, donde el éxito es obtener una planta de tomate y el número de fracasos es obtener una semilla que no brota.
+
+La distribución binomial negativa se define como la distribución de probabilidad del número de fracasos que ocurren antes de que se alcance un número fijo de éxitos en una secuencia de ensayos de Bernoulli independientes y idénticamente distribuidos.
+
+--------------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+# Definir los parámetros
+r <- 10  # número de éxitos fijos deseados
+p <- 0.6  # probabilidad de éxito en cada ensayo de Bernoulli
+
+# Función de probabilidad
+pnbinom <- function(k, r, p) dbinom(k + r - 1, r - 1, p)
+
+# Calcular la probabilidad de que se necesiten k semillas
+k <- 30
+pnbinom(k, r, p)
+```
+
+En este ejemplo, hemos calculado la probabilidad de que el agricultor necesite plantar 30 semillas antes de obtener 10 plantas de tomate.
+
+## 3. Principales funciones continuas.
+
+### 3.1. Uniforme continua.
+
+La distribución uniforme continua modela una variable aleatoria que puede tomar valores igualmente probables en un intervalo continuo. Esta distribución se define mediante dos parámetros: $a$ y $b$, que corresponden a los extremos del intervalo en el que puede tomar valores la variable aleatoria. La función de densidad de probabilidad se define como:
+
+```{=tex}
+\begin{cases}
+\frac{1}{b-a} & \text{si } a \leq x \leq b, \\
+0 & \text{en otro caso}.
+\end{cases}
+```
+donde a es el límite inferior del rango y b es el límite superior del rango.
+
+La función de distribución acumulada se define como:
+
+```{=tex}
+\begin{cases}
+0 & \text{si } x < a, \\
+\frac{x-a}{b-a} & \text{si } a \leq x < b, \\
+1 & \text{si } x \geq b.
+\end{cases}
+```
+
+------------------------------------------------------------------------
+
+La esperanza o valor esperado de una variable aleatoria $X$ con distribución uniforme continua en el intervalo $(a,b)$ se calcula como:
+
+$$E(X)=\frac{a+b}{2}$$
+
+La varianza de una variable aleatoria $X$ con distribución uniforme continua en el intervalo $(a,b)$ se calcula como:
+
+$$Var(X)=\frac{(b−a)^2}{12}$$
+
+------------------------------------------------------------------------
+
+Ejemplo en agricultura:
+
+Un agricultor desea estimar la cantidad de agua que cae en un terreno de su propiedad en un periodo determinado de tiempo. Debido a que el terreno es extenso, el agricultor divide el terreno en 20 secciones iguales y coloca un pluviómetro en cada sección para medir la cantidad de agua caída. Si suponemos que la cantidad de agua que cae en cada sección es independiente e igualmente distribuida en el intervalo $[0,10]$ milímetros, podemos modelar la cantidad de agua $X$ medida en uno de los pluviómetros como una variable aleatoria con distribución uniforme continua con $a=0$ y $b=10$.
+
+------------------------------------------------------------------------
+
+Desarrollo en R:
+
+Para generar una muestra de la distribución uniforme continua en R, podemos utilizar la función runif(). Por ejemplo, para generar 100 valores de una distribución uniforme continua con $a=0$ y $b=1$, podemos hacer lo siguiente:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123) # establecemos la semilla para reproducibilidad
+datos <- runif(10000000, min = 0, max = 1) # generamos los datos
+hist(datos, freq = FALSE, main = "Distribución Uniforme Continua", xlab = "Valores", ylab = "Densidad de Probabilidad") # graficamos la distribución
+
+```
+
+El resultado será un histograma que muestra la distribución uniforme continua en el intervalo $[0,1]$ con una densidad de probabilidad constante de 1 en dicho intervalo.
+
+------------------------------------------------------------------------
+
+### 3.2. Exponencial.
+
+La distribución exponencial es una distribución de probabilidad continua que se utiliza para modelar el tiempo entre dos eventos que ocurren de forma independiente a una tasa constante $\lambda$. Algunos ejemplos de aplicaciones de la distribución exponencial en agronomía incluyen el tiempo que tarda una semilla en germinar, el tiempo que tarda una planta en alcanzar la madurez, o el tiempo que tarda un insecto en completar su ciclo de vida.
+
+La función de densidad de probabilidad de la distribución exponencial está dada por:
+
+\lambda e\^{-\lambda x} & \text{si } x\geq 0 \\ 0 & \text{si } x \< 0 \\end{cases}
+
+donde $x$ es la variable aleatoria, $\lambda > 0$ es el parámetro de tasa de la distribución, y $e$ es la constante matemática de Euler.
+
+La función de distribución acumulada (FDA) de la distribución exponencial está dada por:
+
+$$F(x;\lambda) = 1 - e^{-\lambda x} \quad \text{si } x \geq 0$$
+
+------------------------------------------------------------------------
+
+La esperanza o valor esperado de una variable aleatoria $X$ con distribución exponencial con parámetro de tasa $\lambda$ es:
+
+$$E(X) = \frac{1}{\lambda}$$
+
+La varianza de una variable aleatoria $X$ con distribución exponencial con parámetro de tasa $\lambda$ es:
+
+$$Var(X) = \frac{1}{\lambda^2}$$
+
+------------------------------------------------------------------------
+
+Supongamos que se desea modelar el tiempo de vida útil de una semilla en días, y se sabe por experiencia que la tasa promedio de deterioro de las semillas es de 0.1 por día. Se puede modelar el tiempo de vida útil de la semilla como una variable aleatoria X distribuida exponencialmente con parámetro $\lambda=0.1$.
+
+Para generar datos simulados, se puede utilizar la función rexp de R. Supongamos que se desea generar 100 valores aleatorios de X:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123) # Para reproducibilidad de los resultados
+X <- rexp(100, rate=0.1)
+```
+
+------------------------------------------------------------------------
+
+Para visualizar la distribución de X, se puede crear un histograma y trazar la función de densidad de probabilidad:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+hist(X, freq=FALSE, main="Distribución exponencial", xlab="X")
+curve(dexp(x, rate=0.1), add=TRUE, col="blue")
+```
+
+En el ejemplo de la semilla, la esperanza del tiempo de vida útil de una semilla es de 10 días ($E(X) = \frac{1}{0.1} = 10$). Esto significa que en promedio, se espera que una semilla dure 10 días antes de que se deteriore completamente.
+
+------------------------------------------------------------------------
+
+### 3.3. Normal.
+
+Esta función se utiliza para modelar datos que siguen una distribución normal, es decir, que se distribuyen en forma de campana. La función de densidad de probabilidad de la distribución normal es:
+
+```{=tex}
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+\end{equation}
+```
+Donde x es la variable aleatoria, $\mu$ es la media y $\sigma$ es la desviación estándar.
+
+------------------------------------------------------------------------
+
+En R, se puede generar una muestra de 100 observaciones de una distribución normal con media 150 y desviación estándar 10, utilizando la función rnorm() de la siguiente manera:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123)  # Fijar la semilla para reproducibilidad
+altura_plantas <- rnorm(100, mean = 150, sd = 10)
+```
+
+Posteriormente, se puede graficar la densidad de probabilidad de la distribución normal teórica y la distribución empírica de la muestra generada, utilizando las funciones dnorm() y density() respectivamente.
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+# Crear secuencia de valores de x
+x <- seq(110, 190, length = 1000)
+
+# Densidad de probabilidad teórica
+y_teorica <- dnorm(x, mean = 150, sd = 10)
+
+# Densidad de probabilidad empírica
+densidad_empirica <- density(altura_plantas)
+
+# Graficar
+plot(x, y_teorica, type = "l", lwd = 2, col = "red", xlab = "Altura de plantas (cm)", ylab = "Densidad de probabilidad", main = "Distribución normal de altura de plantas")
+lines(densidad_empirica, lwd = 2, col = "blue")
+legend("topright", legend = c("Teórica", "Empírica"), lwd = c(2, 2), col = c("red", "blue"))
+
+```
+
+------------------------------------------------------------------------
+
+### 3.4. Gamma.
+
+Esta función se utiliza para modelar datos continuos que tienen una distribución asimétrica y no negativa, como el tiempo de crecimiento de una planta o la cantidad de agua necesaria para regar una hectárea de cultivo. La función de densidad de probabilidad de la distribución gamma es:
+
+```{=tex}
+\begin{equation}
+f(x) = \frac{x^{k-1} e^{-\frac{x}{\theta}}}{\theta^k \Gamma(k)}
+\end{equation}
+```
+Donde x es la variable aleatoria, k y $\theta$ son los parámetros de forma y escala de la distribución, respectivamente, y $\Gamma(k)$ es la función gamma.
+
+La esperanza y la varianza de la distribución gamma son:
+
+$$E(X)=αβ$$
+
+$$Var(X)=αβ^2$$
+
+------------------------------------------------------------------------
+
+Un ejemplo en agricultura de la distribución gamma es la modelación del tiempo de crecimiento de las plantas. En este caso, la variable aleatoria $X$ podría ser el tiempo que tarda una planta en crecer desde la siembra hasta la cosecha. La distribución gamma se puede utilizar para modelar la distribución de estos tiempos de crecimiento.
+
+------------------------------------------------------------------------
+
+A continuación, se muestra un ejemplo de cómo generar datos de la distribución gamma en R y graficar la función de densidad de probabilidad:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+# Generar 1000 datos de una distribución gamma con forma = 2 y escala = 1.5
+x <- rgamma(n = 1000, shape = 2, scale = 1.5)
+
+# Graficar la función de densidad de probabilidad
+hist(x, prob = TRUE, main = "Distribución Gamma", xlab = "x")
+curve(dgamma(x, shape = 2, scale = 1.5), add = TRUE, col = "blue")
+```
+
+Este código genera 1000 datos de una distribución gamma con forma igual a 2 y escala igual a 1.5, y luego grafica la función de densidad de probabilidad.
+
+------------------------------------------------------------------------
+
+### 3.6. Lognormal.
+
+La distribución lognormal es una distribución de probabilidad continua que se utiliza comúnmente en agronomía para modelar datos que son positivos y asimétricos. La distribución lognormal se define por dos parámetros: la media ($\mu$) y la desviación estándar ($\sigma$) de la variable aleatoria en escala logarítmica.
+
+La función de distribución acumulativa (cdf) de la distribución lognormal no tiene una forma cerrada, pero puede ser calculada numéricamente.
+
+------------------------------------------------------------------------
+
+La distribución lognormal se utiliza comúnmente en agronomía para modelar datos de producción agrícola, como rendimientos de cultivos, peso de frutas y verduras, y contenido de nutrientes en los cultivos.
+
+Un ejemplo de su uso sería en el análisis del contenido de proteína en la soja. Suponga que se recolecta una muestra de granos de soja y se mide su contenido de proteína. Si se supone que los datos siguen una distribución lognormal, se puede ajustar un modelo de distribución lognormal a los datos y utilizarlo para realizar inferencias sobre el contenido de proteína en la población de granos de soja.
+
+En R, se puede generar una muestra aleatoria de una distribución lognormal utilizando la función rlnorm(), que toma como argumentos la cantidad de muestras a generar y los parámetros $\mu$ y $\sigma$. Por ejemplo, para generar una muestra de tamaño 1000 de una distribución lognormal con $\mu=2$ y $\sigma=0.5$, se puede utilizar el siguiente código:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123)
+x <- rlnorm(1000, meanlog = 2, sdlog = 0.5)
+```
+
+------------------------------------------------------------------------
+
+También se puede trazar el histograma de la muestra generada y compararlo con la función de densidad de probabilidad de la distribución lognormal con los mismos parámetros utilizando el siguiente código:
+
+```{r}
+#| echo: true
+#| comment: ""
+
+library(ggplot2)
+
+ggplot(data.frame(x), aes(x=x)) + 
+  geom_histogram(aes(y=..density..), binwidth=0.1, fill="white", color="black") +
+  stat_function(fun=dlnorm, args=list(meanlog=2, sdlog=0.5), aes(color="Lognormal pdf")) +
+  theme_bw() + xlab("x") + ylab("Density") +
+  scale_color_manual(values=c("blue"))
+
+```
+
+------------------------------------------------------------------------
+
+### 3.7. Chi cuadrado.
+
+La distribución chi cuadrado es una distribución de probabilidad continua que se utiliza comúnmente en estadística inferencial para pruebas de hipótesis y construcción de intervalos de confianza. Esta distribución surge cuando se suman los cuadrados de k variables aleatorias normales estándar.
+
+La esperanza y la varianza de la distribución chi cuadrado con k grados de libertad son:
+
+$$E(X)=k$$
+
+$$Var(X)=2k$$
+
+------------------------------------------------------------------------
+
+Un ejemplo de la distribución chi cuadrado en agricultura es el análisis de la variabilidad en la producción de cultivos. Si se supone que la producción de un cultivo sigue una distribución normal, se puede utilizar la distribución chi cuadrado para evaluar la variabilidad en la producción a lo largo de diferentes áreas de cultivo o temporadas de siembra.
+
+En R, se puede generar una muestra aleatoria de una distribución chi cuadrado con k grados de libertad utilizando la función rchisq(). Por ejemplo, para generar una muestra de tamaño 100 de una distribución chi cuadrado con 5 grados de libertad, se puede usar el siguiente código:
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123) # establecer la semilla para reproducibilidad
+x <- rchisq(100, df = 5) # generar la muestra aleatoria
+hist(x, freq = FALSE, main = "Distribución Chi cuadrado", xlab = "Valores de x") # graficar la distribución
+curve(dchisq(x, df = 5), add = TRUE, col = "red") # graficar la función de densidad de probabilidad
+```
+
+Esto producirá un histograma de los valores generados y la función de densidad de probabilidad de la distribución chi cuadrado con 5 grados de libertad.
+
+------------------------------------------------------------------------
+
+### 3.8. t de Student.
+
+La distribución t de Student es una distribución de probabilidad que surge a partir de la estimación de la media poblacional de una variable aleatoria normalmente distribuida cuando el tamaño muestral es pequeño (generalmente n \< 30).
+
+La distribución t de Student tiene una forma de campana simétrica alrededor de cero, similar a la distribución normal. Sin embargo, a medida que el número de grados de libertad aumenta, la distribución t se acerca cada vez más a una distribución normal.
+
+La esperanza y la varianza de la distribución t de Student están dadas por:
+
+$$E(X)=0,Var(X)=ν/(ν−2),ν>2$$
+
+------------------------------------------------------------------------
+
+Un ejemplo de aplicación de la distribución t de Student en agricultura podría ser la comparación de dos tratamientos en un experimento de campo. Supongamos que se midió la producción de maíz en dos parcelas y se quiere comparar si el rendimiento es significativamente diferente entre ellas. Si el tamaño de muestra de cada parcela es pequeño (por ejemplo, n = 10), se podría utilizar la distribución t de Student para calcular el intervalo de confianza y la prueba de hipótesis correspondiente.
+
+A continuación, se muestra un ejemplo de cómo se puede generar una muestra aleatoria de la distribución t de Student en R:
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+set.seed(123)
+nu <- 10 # grados de libertad
+t_dist <- rt(n = 1000, df = nu)
+hist(t_dist)
+```
+
+En este ejemplo, se generó una muestra aleatoria de tamaño 1000 de la distribución t de Student con 10 grados de libertad.
+
+------------------------------------------------------------------------
+
+### 3.9. F de Fisher.
+
+La distribución F de Fisher es una distribución de probabilidad que se utiliza en estadística para comparar la varianza de dos poblaciones. Esta distribución se utiliza comúnmente en análisis de varianza (ANOVA) y en pruebas de hipótesis para comparar la varianza de dos grupos.
+
+------------------------------------------------------------------------
+
+La distribución F se utiliza en agricultura para comparar la varianza de dos poblaciones, por ejemplo, para determinar si hay una diferencia significativa en la producción de cultivos entre dos tipos diferentes de suelo. También se utiliza en la evaluación de la calidad del ajuste de modelos de regresión no lineal.
+
+En R, se puede generar una muestra aleatoria de la distribución F utilizando la función rf(). Por ejemplo, para generar una muestra de tamaño 100 con 5 grados de libertad en el numerador y 10 grados de libertad en el denominador, se puede utilizar el siguiente código:
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+# Generar muestra aleatoria de la distribución F
+set.seed(123)
+x <- rf(n = 100, df1 = 5, df2 = 10)
+
+# Calcular densidad y distribución acumulada
+densidad <- df(x, df1 = 5, df2 = 10)
+dist_acum <- pf(x, df1 = 5, df2 = 10)
+
+# Graficar densidad y distribución acumulada
+hist(x, probability = T, ylim = c(0,0.7), main = "Distribución F")
+curve(df(x, df1 = 5, df2 = 10), add = TRUE, col = "red")
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: true
+#| comment: ""
+
+curve(pf(x, df1 = 5, df2 = 10), add = FALSE, col = "red" , main = "Distribución acumulada F")
+```
+
+#  {background-color="#000000" background="#43464B"}
+
+::: r-fit-text
+¿Preguntas?
+:::
+
+## `r fontawesome::fa("mug-saucer", "white")` Hagamos una pausa {background-color="#000000" background="#43464B"}
+
+<hr>
+
+::: r-fit-text
+<center>
+
+Tomemos un descanso de `5 minutos`...
+
+Estire las piernas `r fontawesome::fa("person-walking", "white")`...
+
+Deje de ver las pantallas `r fontawesome::fa("laptop", "white")`...
+
+... cualquier `r fontawesome::fa("laptop", "white")`, las del celular `r fontawesome::fa("mobile", "white")` también.
+
+</center>
+:::
+
+#  {background-color="#000000"}

@@ -1,0 +1,269 @@
+---
+title: "Modelos predictivos"
+format: html
+editor: visual
+---
+
+## Caso: Proyección de arándano
+
+```{r}
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(ggplot2, dplyr, tidyverse, tidymodels)
+
+archivos <- list.files(pattern = "data.xlsx",
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+arandano <- readxl::read_xlsx(archivos[1], sheet = "Hoja1")
+```
+
+### Partición de datos
+
+```{r}
+set.seed(123)
+arandano_split <- initial_split(arandano, prop = 0.7, strata = `Kg_Total`)
+arandano_train <- training(arandano_split)
+arandano_test <- testing(arandano_split)
+```
+
+### Receta de preprocesamiento
+
+```{r}
+data_rec <- recipe(`Kg_Total` ~ .,
+                   data = arandano_train)
+
+data_prep <- prep(data_rec)
+
+# Se aplican las transformaciones al conjunto de entrenamiento y de test
+arandano_train_prep <- juice(data_prep)
+arandano_test_prep  <- bake(data_prep, new_data = arandano_test)
+```
+
+### Definir motor del modelo
+
+```{r}
+# Initialize a linear regression object, linear_model
+linear_model <- linear_reg() %>% 
+  # Set the model engine
+  set_engine('lm') %>% 
+  # Set the model mode
+  set_mode('regression')
+```
+
+### Definir la fórmula
+
+```{r}
+formula_lm = Kg_Total ~ 
+  Area + Plantas_Productivas + Cremas + Maduras + Peso_Baya
+```
+
+```{r}
+lm_model <- linear_model %>%
+  fit(
+    formula_lm,
+    data = arandano_train_prep
+    )
+
+lm_model %>% broom::tidy()
+```
+
+```{r}
+performance::check_model(lm_model)
+```
+
+## Modelo gamma
+
+```{r}
+# Initialize a linear regression object, glm_gamma_model
+glm_gamma_model <- linear_reg() %>% 
+  # Set the model engine
+  set_engine('glm',
+             family = Gamma( #"gamma"
+               link = "log")) %>% #identity, log, inverse
+  # Set the model mode
+  set_mode('regression')
+```
+
+```{r}
+gamma_model <- glm_gamma_model %>%
+  fit(
+    formula_lm,
+    data = arandano_train_prep
+    )
+
+gamma_model %>% broom::tidy()
+```
+
+```{r}
+performance::check_model(gamma_model)
+```
+
+## Caso: Recuento de insectos
+
+```{r}
+archivos <- list.files(pattern = "data.xlsx",
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+
+recuento <- readxl::read_xlsx(archivos[2], sheet = "Sheet1")
+recuento$Macho <- factor(recuento$Macho,
+                      levels=c(0,1),
+                      labels=c("Hembras","Machos"))
+recuento$Urbano <- factor(recuento$Urbano,
+                      levels=c(0,1),
+                      labels=c("No","Sí"))
+```
+
+```{r}
+set.seed(123)
+recuento_split <- initial_split(recuento, prop = 0.7,  strata = `Recuento`)
+recuento_train <- training(recuento_split)
+recuento_test <- testing(recuento_split)
+```
+
+```{r}
+data_rec <- recipe(`Recuento` ~ .,
+                   data = recuento_train)
+
+data_prep <- prep(data_rec)
+
+# Se aplican las transformaciones al conjunto de entrenamiento y de test
+recuento_train_prep <- juice(data_prep)
+recuento_test_prep  <- bake(data_prep, new_data = recuento_test)
+```
+
+```{r}
+# Initialize a linear regression object, glm_gamma_model
+glm_poisson_model <- linear_reg() %>% 
+  # Set the model engine
+  set_engine('glm',
+             family = poisson(
+               link = "identity")) %>%
+  # Set the model mode
+  set_mode('regression')
+```
+
+```{r}
+formula_glm_poisson = Recuento ~ 
+  Altura + Macho
+```
+
+```{r}
+glm_model <- glm_poisson_model %>%
+  fit(
+    formula_glm_poisson,
+    data = recuento_train_prep
+    )
+
+glm_model %>% broom::tidy()
+```
+
+```{r}
+performance::check_model(glm_model)
+```
+
+## Caso: Dosis Letales
+
+```{r}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(ggplot2, dplyr, tidyverse, MASS, readxl, broom, gt,
+               ecotox)
+```
+
+```{r}
+archivos <- list.files(pattern = "DL50.xlsx",
+                       full.names = TRUE,
+                       recursive = TRUE)
+
+
+dat <- readxl::read_xlsx(archivos, sheet = "Hoja1") %>%
+  dplyr::rename(Dose = `Dosis (ml/L)`) %>%
+  dplyr::filter(!Dose %in% 0) %>%
+  dplyr::mutate(Prop = `N° Muertos` / `N° Individuos`)
+```
+
+```{r}
+model<-glm((`N° Muertos` / `N° Individuos`) ~ I(log10(Dose)),
+           family = binomial(link = "probit"),
+           weights = `N° Individuos`,
+           dat)
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(model)
+```
+
+```{r}
+summary(model)
+```
+
+```{r}
+anova(model, test = "Chisq")
+```
+
+```{r}
+m <- LC_probit(`N° Muertos` / `N° Individuos` ~ log10(Dose), p = c(50, 90),
+               weights = `N° Individuos`,
+               data = dat)
+m %>% gt()
+```
+
+```{r}
+#| echo: true
+#| output: asis
+
+p1 <- ggplot(data = dat,
+            aes(x = Dose,
+                y = (`N° Muertos`/`N° Individuos`))) +
+  geom_point() +
+  geom_smooth(method = "glm",
+              formula = y ~ I(log10(x)),
+              method.args = list(family = binomial(link = "probit")),
+              aes(weight = `N° Individuos`), colour = "#FF0000", se = TRUE)
+p1
+```
+
+```{r}
+#| echo: true
+
+dose.grid <- seq(min(dat$Dose), 
+                 max(dat$Dose), 
+                 length.out = 100)
+p.grid <- predict(model,
+                  newdata = data.frame(Dose = dose.grid),
+                  type = "response")
+
+# Hallar el coeficiente angular
+coefs <- tidy(model) %>%
+  dplyr::filter(term == "I(log10(Dose))") %>%
+  dplyr::select(term, estimate, std.error)
+
+# Hallar X2
+X2 <- summary(model)$deviance
+# Hallar d.f.
+df <- summary(model)$df.residual
+
+# Hallar la heterogeneidad
+hetero <- X2/df
+```
+
+```{r}
+#| echo: true
+#| output: asis
+
+# Resultados
+resultados <- data.frame(
+  # Population = "Susceptible",
+  LC50 = paste0(round(1.009404,1)," ± ",round(0.124,2)),
+  LC90 = paste0(round(3.180513,1)," ± ",round(0.681,2)),
+  `Coeficiente angular` = paste0(round(coefs$estimate[1],1)," ± ",round(coefs$std.error[1],2)),
+  X2 = round(X2,4),
+  G.L. = df,
+  Heterogeneidad = round(hetero,4)
+)
+resultados %>% gt::gt()
+```
+
